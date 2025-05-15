@@ -1,8 +1,11 @@
+<%@page import="com.espe.zonarbol.model.ForestZone"%>
+<%@page import="com.espe.zonarbol.model.ForestZone"%>
+<%@page import="com.espe.zonarbol.model.ConservationActivity"%>
+<%@page import="com.espe.zonarbol.dao.ForestZoneDAO"%>
+<%@page import="com.espe.zonarbol.dao.ConservationActivityDAO"%>
+<%@page import="com.espe.zonarbol.dao.ConservationActivityDAO"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="models.ConservationActivity" %>
-<%@ page import="dao.ConservationActivityDAO" %>
-<%@ page import="dao.ForestZoneDAO" %>
 <%
     ConservationActivityDAO activityDAO = new ConservationActivityDAO();
     ForestZoneDAO zoneDAO = new ForestZoneDAO();
@@ -17,10 +20,10 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body class="min-h-screen bg-gray-50">
-    <jsp:include page="sidebar.jsp" />
+<body class="min-h-screen bg-gray-50 flex">
+    <jsp:include page="components/sidebar.jsp" />
 
-    <main class="p-4 md:ml-64">
+    <main class="flex-grow p-4 md:p-8">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-green-700">Actividades de Conservación</h2>
             <button onclick="document.getElementById('add-activity-modal').showModal()" 

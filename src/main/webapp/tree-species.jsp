@@ -1,7 +1,7 @@
+<%@page import="com.espe.zonarbol.dao.TreeSpeciesDAO"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="models.TreeSpecies" %>
-<%@ page import="dao.TreeSpeciesDAO" %>
+<%@ page import="com.espe.zonarbol.model.TreeSpecies" %>
 <%
     TreeSpeciesDAO speciesDAO = new TreeSpeciesDAO();
     List<TreeSpecies> speciesList = speciesDAO.getAllTreeSpecies();
@@ -15,10 +15,10 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body class="min-h-screen bg-gray-50">
-    <jsp:include page="sidebar.jsp" />
+<body class="min-h-screen bg-gray-50 flex">
+    <jsp:include page="components/sidebar.jsp" />
 
-    <main class="p-4 md:ml-64">
+    <main class="flex-grow p-4 md:p-8">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-green-700">Especies de Árboles</h2>
             <button onclick="document.getElementById('add-species-modal').showModal()" 
