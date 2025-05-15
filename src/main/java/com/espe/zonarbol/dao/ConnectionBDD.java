@@ -14,7 +14,7 @@ import java.sql.SQLException;
  */
 public class ConnectionBDD {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/test?useSSL=false&allowPublicKeyRetrieval=true";
+    private static final String URL = "jdbc:mysql://localhost:3306/zonarbol?useSSL=false&allowPublicKeyRetrieval=true";
     private static final String USER = "admin";
     private static final String PASSWORD = "admin";
 
