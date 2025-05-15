@@ -1,0 +1,50 @@
+# NetBeans specific files
+/nbproject/private/
+/build/
+/dist/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# Compiled class files
+*.class
+
+# Log file
+*.log
+
+# Package Files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE specific files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+
+# Build directory
+target/
+
+# Dependency directories
+node_modules/
+
+# Local configuration files
+*.properties
+*.settings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite
+
+# Environment files
+.env
