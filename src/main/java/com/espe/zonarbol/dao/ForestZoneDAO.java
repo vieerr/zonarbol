@@ -168,6 +168,57 @@ public class ForestZoneDAO {
 
         return zones;
     }
+    
+    public boolean addForestZone(ForestZone forestZone){       
+        String sql = "INSERT INTO forest_zones (zone_name, province, canton, total_area_hectares, forest_type)"
+                + "VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, forestZone.getZoneName());
+            stmt.setString(2, forestZone.getProvince());
+            stmt.setString(3, forestZone.getCanton());
+            stmt.setDouble(4, forestZone.getTotalAreaHectares());
+            stmt.setString(5, forestZone.getForestType());
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                return false;
+            }
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    forestZone.setZoneId(generatedKeys.getInt(1));
+                }
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    // Update tree species
+    public boolean updateForestZone(ForestZone forestZone) {
+        String sql = "UPDATE forest_zones SET zone_name = ?, province = ?, "
+                + "canton = ?, total_area_hectares = ?, forest_type = ? "
+                + "WHERE zone_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, forestZone.getZoneName());
+            stmt.setString(2, forestZone.getProvince());
+            stmt.setString(3, forestZone.getCanton());
+            stmt.setDouble(4, forestZone.getTotalAreaHectares());
+            stmt.setString(5, forestZone.getForestType());
+            
+            stmt.setInt(6, forestZone.getZoneId());
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     private ForestZone extractForestZoneFromResultSet(ResultSet rs) throws SQLException {
         ForestZone zone = new ForestZone();
@@ -181,9 +232,4 @@ public class ForestZoneDAO {
         zone.setState(rs.getString("state"));
         return zone;
     }
-
-
-
-
-
 }

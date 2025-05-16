@@ -21,7 +21,7 @@
     <main class="flex-grow p-4 md:p-8">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-green-700">Zonas Forestales</h2>
-            <button onclick="document.getElementById('add-zone-modal').showModal()" 
+            <button onclick="openAddModal()" 
                     class="btn btn-soft btn-success">
                 <i class="fas fa-plus"></i>
                 Nueva Zona
@@ -98,24 +98,25 @@
     </main>
 
     <!-- Add Zone Modal -->
-    <dialog id="add-zone-modal" class="modal">
+    <dialog id="base-modal-form" class="modal">
         <div class="modal-box w-11/12 max-w-5xl">
-            <h3 class="font-bold text-lg">Registrar Nueva Zona Forestal</h3>
+            <h3 id="form-title" class="font-bold text-lg">Title</h3>
             <form action="ForestZoneServlet" method="POST" class="mt-4">
-                <input type="hidden" name="action" value="add">
+                <input id="input-action" type="hidden" name="action" value="add">
+                <input id="input-zoneId" type="hidden" name="zoneId" value="0">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="label">
                             <span class="label-text">Nombre de la Zona*</span>
                         </label>
-                        <input type="text" name="zoneName" placeholder="Ej: Bosque Alto Talamanca" 
+                        <input id="input-zoneName" type="text" name="zoneName" placeholder="Ej: Bosque Alto Talamanca" 
                                class="input input-bordered w-full" required>
                     </div>
                     <div>
                         <label class="label">
                             <span class="label-text">Tipo de Bosque*</span>
                         </label>
-                        <input type="text" name="forestType" placeholder="Ej: Bosque húmedo tropical" 
+                        <input id="input-forestType" type="text" name="forestType" placeholder="Ej: Bosque húmedo tropical" 
                                class="input input-bordered w-full" required>
                     </div>
                     <div>
@@ -138,12 +139,12 @@
                         <label class="label">
                             <span class="label-text">Área Total (hectáreas)*</span>
                         </label>
-                        <input type="number" step="0.01" min="0.01" name="totalAreaHectares" 
+                        <input id="input-totalAreaHectares" type="number" step="0.01" min="0.01" name="totalAreaHectares" 
                                placeholder="Ej: 15000.50" class="input input-bordered w-full" required>
                     </div>
                 </div>
                 <div class="modal-action">
-                    <button type="button" onclick="document.getElementById('add-zone-modal').close()" 
+                    <button type="button" onclick="document.getElementById('base-modal-form').close()" 
                             class="btn btn-ghost">Cancelar</button>
                     <button type="submit" class="btn btn-success">Guardar</button>
                 </div>
@@ -186,11 +187,24 @@
             const provinces = Object.keys(zoneLocation).sort();
 
             provinces.forEach(province => {
-            const optionElement = document.createElement('option');
-            optionElement.value = province;
-            optionElement.textContent = province;
+                const optionElement = document.createElement('option');
+                optionElement.value = province;
+                optionElement.textContent = province;
 
-            provinceSelect.appendChild(optionElement);
+                provinceSelect.appendChild(optionElement);
+            });
+        }
+        
+        function loadCantones(province){
+            cantonSelect.innerHTML = '<option value="">Seleccione...</option>';
+      
+            const cantones = zoneLocation[province].sort();
+
+		cantones.forEach(canton => {
+                const optionElement = document.createElement('option');
+                optionElement.value = canton;
+                optionElement.textContent = canton;
+                cantonSelect.appendChild(optionElement);
             });
         }
 
@@ -204,24 +218,69 @@
             }
 
             cantonSelect.disabled = false;
-            cantonSelect.innerHTML = '<option value="">Seleccione...</option>';
-      
-            const cantones = zoneLocation[province].sort();
-
-		cantones.forEach(canton => {
-                const optionElement = document.createElement('option');
-                optionElement.value = canton;
-                optionElement.textContent = canton;
-                cantonSelect.appendChild(optionElement);
-            });
+            loadCantones(province);
         });
 
         loadProvinces();
         
-        function openEditModal(zoneId) {
-            // Here you would fetch the zone data and populate the edit modal
-            console.log("Editing zone ID:", zoneId);
-            // Implement AJAX call to get zone details and show edit modal
+        const formModal = document.getElementById('base-modal-form');
+        
+        function openAddModal() {
+            document.getElementById('form-title').innerHTML = 'Registrar Nueva Zona Forestal';
+            
+            document.getElementById('input-action').value = "add";
+            document.getElementById('input-zoneId').value = "0";
+            document.getElementById('input-zoneName').value = "";
+            document.getElementById('input-forestType').value = "";
+            document.getElementById('province').value = "";
+            document.getElementById('canton').value = "";
+            document.getElementById('input-totalAreaHectares').value = "";
+            
+            document.getElementById('canton').disabled = true;
+            formModal.show();
+        }
+        
+        // function to handle edit form mode        
+        async function openEditModal(zoneId) {
+            const urlString = `/zonarbol/ForestZoneServlet?action=search&zoneId=` + zoneId;
+            
+            try {
+                const response = await fetch(urlString);
+                const data = await response.json();
+                console.log(data);
+                placeDataInForm(data);
+                formModal.show();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function placeDataInForm(data){
+            document.getElementById('form-title').innerHTML = 'Actualizar Zona Forestal';
+            
+            document.getElementById('input-action').value = "update";
+            document.getElementById('input-zoneId').value = data.zoneId;
+            document.getElementById('input-zoneName').value = data.zoneName;
+            document.getElementById('input-forestType').value = data.forestType;
+            
+            selectOption(provinceSelect, data.province);
+            loadCantones(data.province);
+            selectOption(cantonSelect, data.canton);
+            
+            document.getElementById('input-totalAreaHectares').value = data.totalAreaHectares;
+            
+            document.getElementById('canton').disabled = false;
+        }
+        
+        function selectOption(selectInput, targetValue){
+            const options = selectInput.options;
+    
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === targetValue) {
+                    options[i].selected = true;
+                    break;
+                }
+            }
         }
 
         function confirmDelete(zoneId) {
