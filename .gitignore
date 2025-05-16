@@ -11,7 +11,7 @@
 
 # Log file
 *.log
-
+*.bak
 # Package Files
 *.jar
 *.war
