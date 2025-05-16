@@ -22,14 +22,14 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-green-700">Zonas Forestales</h2>
             <button onclick="document.getElementById('add-zone-modal').showModal()" 
-                    class="btn btn-success gap-2">
+                    class="btn btn-soft btn-success">
                 <i class="fas fa-plus"></i>
                 Nueva Zona
             </button>
         </div>
 
         <!-- Filter and Search -->
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
+<!--        <div class="bg-white p-4 rounded-lg shadow mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="label">Provincia</label>
@@ -53,19 +53,18 @@
                     </select>
                 </div>
             </div>
-        </div>
+        </div>-->
 
         <!-- Zones Table -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="table">
                     <thead>
-                        <tr>
+                        <tr class="text-center">
                             <th>Nombre</th>
                             <th>Ubicación</th>
                             <th>Área (ha)</th>
                             <th>Tipo de Bosque</th>
-                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -77,19 +76,16 @@
                             <td><%= String.format("%,.2f", zone.getTotalAreaHectares()) %></td>
                             <td><%= zone.getForestType() %></td>
                             <td>
-                                <span class="badge <%= zone.getState().equals("ACTIVE") ? "badge-success" : "badge-error" %>">
-                                    <%= zone.getState().equals("ACTIVE") ? "Activo" : "Inactivo" %>
-                                </span>
-                            </td>
-                            <td>
                                 <div class="flex space-x-2">
                                     <button onclick="openEditModal(<%= zone.getZoneId() %>)" 
-                                            class="btn btn-xs btn-primary">
-                                        <i class="fas fa-edit"></i>
+                                            class="btn btn-sm btn-info">
+                                        <i class="fas fa-edit text-white"></i>
+                                        <p class="text-white">Editar</p>
                                     </button>
                                     <button onclick="confirmDelete(<%= zone.getZoneId() %>)" 
-                                            class="btn btn-xs btn-error">
-                                        <i class="fas fa-trash"></i>
+                                            class="btn btn-sm btn-error ml-2">
+                                        <i class="fas fa-trash text-white"></i>
+                                        <p class="text-white">Eliminar</p>
                                     </button>
                                 </div>
                             </td>
@@ -126,23 +122,17 @@
                         <label class="label">
                             <span class="label-text">Provincia*</span>
                         </label>
-                        <select name="province" class="select select-bordered w-full" required>
+                        <select id="province" name="province" class="select select-bordered w-full" required>
                             <option value="">Seleccione...</option>
-                            <option value="San José">San José</option>
-                            <option value="Alajuela">Alajuela</option>
-                            <option value="Cartago">Cartago</option>
-                            <option value="Heredia">Heredia</option>
-                            <option value="Guanacaste">Guanacaste</option>
-                            <option value="Puntarenas">Puntarenas</option>
-                            <option value="Limón">Limón</option>
                         </select>
                     </div>
                     <div>
                         <label class="label">
                             <span class="label-text">Cantón*</span>
                         </label>
-                        <input type="text" name="canton" placeholder="Ej: Talamanca" 
-                               class="input input-bordered w-full" required>
+                        <select id="canton" name="canton" class="select select-bordered w-full" disabled required>
+                            <option value="">Seleccione...</option>
+                        </select>
                     </div>
                     <div>
                         <label class="label">
@@ -150,15 +140,6 @@
                         </label>
                         <input type="number" step="0.01" min="0.01" name="totalAreaHectares" 
                                placeholder="Ej: 15000.50" class="input input-bordered w-full" required>
-                    </div>
-                    <div>
-                        <label class="label">
-                            <span class="label-text">Estado*</span>
-                        </label>
-                        <select name="state" class="select select-bordered w-full" required>
-                            <option value="ACTIVE">Activo</option>
-                            <option value="INACTIVE">Inactivo</option>
-                        </select>
                     </div>
                 </div>
                 <div class="modal-action">
@@ -171,6 +152,72 @@
     </dialog>
 
     <script>
+        const zoneLocation = {
+  "Azuay": ["Girón", "Cuenca", "Gualaceo", "Paute", "Santa Isabel", "Pucará", "San Fernando", "Chordeleg", "El Pan", "Sevilla de Oro", "Guachapala", "Sigsig", "Oña", "Nabón", "Ponce Enríquez"],
+  "Bolívar": ["Guaranda", "Chillanes", "Chimbo", "Echeandía", "San Miguel", "Caluma", "Las Naves"],
+  "Cañar": ["Azogues", "Biblián", "Cañar", "La Troncal", "El Tambo", "Déleg", "Suscal"],
+  "Carchi": ["Tulcán", "Bolívar", "Espejo", "Mira", "Montúfar", "San Pedro de Huaca"],
+  "Chimborazo": ["Riobamba", "Alausí", "Colta", "Chambo", "Chunchi", "Guamote", "Guano", "Pallatanga", "Penipe", "Cumandá"],
+  "Cotopaxi": ["Latacunga", "La Maná", "Pangua", "Pujilí", "Salcedo", "Saquisilí", "Sigchos"],
+  "El Oro": ["Machala", "Arenillas", "Atahualpa", "Balsas", "Chilla", "El Guabo", "Huaquillas", "Marcabelí", "Pasaje", "Piñas", "Portovelo", "Santa Rosa", "Zaruma", "Las Lajas"],
+  "Esmeraldas": ["Esmeraldas", "Eloy Alfaro", "Muisne", "Quinindé", "San Lorenzo", "Atacames", "Río Verde", "La Concordia"],
+  "Galápagos": ["San Cristóbal", "Santa Cruz", "Isabela"],
+  "Guayas": ["Guayaquil", "Alfredo Baquerizo Moreno", "Balao", "Balzar", "Colimes", "Coronel Marcelino Maridueña", "Daule", "Durán", "El Empalme", "El Triunfo", "General Antonio Elizalde", "Isidro Ayora", "Lomas de Sargentillo", "Milagro", "Naranjal", "Naranjito", "Nobol", "Palestina", "Pedro Carbo", "Playas", "Salitre", "Samborondón", "Santa Lucía", "Simón Bolívar", "Yaguachi"],
+  "Imbabura": ["Ibarra", "Antonio Ante", "Cotacachi", "Otavalo", "Pimampiro", "San Miguel de Urcuquí"],
+  "Loja": ["Loja", "Calvas", "Catamayo", "Celica", "Chaguarpamba", "Espíndola", "Gonzanamá", "Macará", "Olmedo", "Paltas", "Puyango", "Quilanga", "Saraguro", "Sozoranga", "Zapotillo", "Pindal"],
+  "Los Ríos": ["Babahoyo", "Baba", "Montalvo", "Puebloviejo", "Quevedo", "Urdaneta", "Ventanas", "Vínces", "Palenque", "Buena Fé", "Valencia", "Mocache", "Quinsaloma"],
+  "Manabí": ["Portoviejo", "Bolívar", "Chone", "El Carmen", "Flavio Alfaro", "Jama", "Jaramijó", "Jipijapa", "Junín", "Manta", "Montecristi", "Olmedo", "Paján", "Pedernales", "Pichincha", "Puerto López", "Rocafuerte", "San Vicente", "Santa Ana", "Sucre", "Tosagua", "Veinticuatro de Mayo"],
+  "Morona Santiago": ["Macas", "Gualaquiza", "Limón Indanza", "Palora", "Santiago", "Sucúa", "Huamboya", "San Juan Bosco", "Taisha", "Logroño", "Pablo Sexto", "Tiwintza"],
+  "Napo": ["Tena", "Archidona", "El Chaco", "Quijos", "Carlos Julio Arosemena Tola"],
+  "Orellana": ["Francisco de Orellana", "Aguarico", "La Joya de los Sachas", "Loreto"],
+  "Pastaza": ["Puyo", "Arajuno", "Mera", "Santa Clara"],
+  "Pichincha": ["Quito", "Cayambe", "Mejía", "Pedro Moncayo", "Rumiñahui", "San Miguel de los Bancos", "Pedro Vicente Maldonado", "Puerto Quito"],
+  "Santa Elena": ["Santa Elena", "La Libertad", "Salinas"],
+  "Santo Domingo de los Tsáchilas": ["Santo Domingo", "La Concordia"],
+  "Sucumbíos": ["Nueva Loja", "Cascales", "Cuyabeno", "Gonzalo Pizarro", "Lago Agrio", "Putumayo", "Shushufindi"],
+  "Tungurahua": ["Ambato", "Baños de Agua Santa", "Cevallos", "Mocha", "Patate", "Pelileo", "Píllaro", "Quero", "Tisaleo"],
+  "Zamora Chinchipe": ["Zamora", "Chinchipe", "Nangaritza", "Yacuambi", "Yantzaza", "El Pangui", "Centinela del Cóndor", "Palanda", "Paquisha"]
+};
+
+        const provinceSelect = document.getElementById('province');
+        const cantonSelect   = document.getElementById('canton');
+
+        function loadProvinces() {
+            const provinces = Object.keys(zoneLocation).sort();
+
+            provinces.forEach(province => {
+            const optionElement = document.createElement('option');
+            optionElement.value = province;
+            optionElement.textContent = province;
+
+            provinceSelect.appendChild(optionElement);
+            });
+        }
+
+        provinceSelect.addEventListener('change', () => {
+            const province = provinceSelect.value;
+
+            if (!province) {
+                cantonSelect.innerHTML = '<option value="">Seleccione...</option>';
+                cantonSelect.disabled = true;
+                return;
+            }
+
+            cantonSelect.disabled = false;
+            cantonSelect.innerHTML = '<option value="">Seleccione...</option>';
+      
+            const cantones = zoneLocation[province].sort();
+
+		cantones.forEach(canton => {
+                const optionElement = document.createElement('option');
+                optionElement.value = canton;
+                optionElement.textContent = canton;
+                cantonSelect.appendChild(optionElement);
+            });
+        });
+
+        loadProvinces();
+        
         function openEditModal(zoneId) {
             // Here you would fetch the zone data and populate the edit modal
             console.log("Editing zone ID:", zoneId);

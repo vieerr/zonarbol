@@ -20,7 +20,7 @@ public class ForestZoneDAO {
 
     public List<ForestZone> getAllForestZones() {
         List<ForestZone> zones = new ArrayList<>();
-        String sql = "SELECT * FROM forest_zones ORDER BY zone_name";
+        String sql = "SELECT * FROM forest_zones WHERE state='ACTIVE' ORDER BY zone_name;";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 

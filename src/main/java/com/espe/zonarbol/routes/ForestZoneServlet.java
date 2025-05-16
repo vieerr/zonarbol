@@ -30,7 +30,7 @@ public class ForestZoneServlet extends HttpServlet {
             String canton = request.getParameter("canton");
             double totalArea = Double.parseDouble(request.getParameter("totalAreaHectares"));
             String forestType = request.getParameter("forestType");
-            String state = request.getParameter("state");
+            String state = "ACTIVE";
             
             // Create new zone object
             ForestZone newZone = new ForestZone();
