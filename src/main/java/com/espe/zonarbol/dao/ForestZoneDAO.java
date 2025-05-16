@@ -219,6 +219,19 @@ public class ForestZoneDAO {
             return false;
         }
     }
+    
+    // Delete forest zone
+    public boolean deleteForestZone(int zoneId) {
+        String sql = "UPDATE forest_zones SET state='INACTIVE' WHERE zone_id = ?;";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, zoneId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     private ForestZone extractForestZoneFromResultSet(ResultSet rs) throws SQLException {
         ForestZone zone = new ForestZone();

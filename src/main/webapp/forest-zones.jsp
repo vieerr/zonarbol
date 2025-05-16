@@ -283,10 +283,15 @@
             }
         }
 
-        function confirmDelete(zoneId) {
+        async function confirmDelete(zoneId) {
             if (confirm("¿Está seguro que desea eliminar esta zona forestal?")) {
-                // Implement delete functionality
-                console.log("Deleting zone ID:", zoneId);
+                const urlString = `/zonarbol/ForestZoneServlet?action=delete&zoneId=` + zoneId;
+            
+                try {
+                    await fetch(urlString);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
             }
         }
     </script>
