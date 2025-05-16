@@ -1,11 +1,31 @@
+<%@page import="com.espe.zonarbol.model.ConservationActivity"%>
+<%@page import="com.espe.zonarbol.dao.TreeSpeciesDAO"%>
+<%@page import="com.espe.zonarbol.dao.ConservationActivityDAO"%>
+<%@page import="com.espe.zonarbol.dao.ForestZoneDAO"%>
+<%@page import="com.espe.zonarbol.dao.ForestZoneDAO"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page session="true" %>
+<%@ page import="java.util.List" %>
 <%
     String username = (String) session.getAttribute("username");
     if (username == null) {
         response.sendRedirect("index.jsp");
         return;
     }
+
+    // Initialize DAOs
+    ForestZoneDAO zoneDAO = new ForestZoneDAO();
+    TreeSpeciesDAO speciesDAO = new TreeSpeciesDAO();
+    ConservationActivityDAO activityDAO = new ConservationActivityDAO();
+
+    // Get counts for dashboard
+    int zonesCount = zoneDAO.getForestZonesCount();
+    int speciesCount = speciesDAO.getTreeSpeciesCount();
+    int activitiesCount = activityDAO.getConservationActivitiesCount();
+    int activeActivitiesCount = activityDAO.getActiveConservationActivitiesCount();
+
+    // Get recent activities
+    List<ConservationActivity> recentActivities = activityDAO.getRecentActivities(5);
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,46 +39,8 @@
 </head>
 <body class="min-h-screen bg-gray-50 flex">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white shadow-lg flex flex-col hidden md:flex">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center space-x-3">
-                <div class="text-3xl text-green-600">
-                    <i class="fas fa-tree"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-green-700">ZonArbol</h1>
-            </div>
-            <p class="text-sm text-gray-600 mt-2">Usuario: <strong><%= username %></strong></p>
-        </div>
-        <nav class="flex-grow p-4 space-y-1">
-            <a href="menu.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
-                <i class="fas fa-home w-5 text-center"></i>
-                <span class="font-medium">Inicio</span>
-            </a>
-            <a href="forest-zones.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
-                <i class="fas fa-map-marked-alt w-5 text-center"></i>
-                <span class="font-medium">Zonas Forestales</span>
-            </a>
-            <a href="tree-species.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
-                <i class="fas fa-leaf w-5 text-center"></i>
-                <span class="font-medium">Especies de Árboles</span>
-            </a>
-            <a href="conservation-activities.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
-                <i class="fas fa-hands-helping w-5 text-center"></i>
-                <span class="font-medium">Actividades de Conservación</span>
-            </a>
-            <a href="reports.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
-                <i class="fas fa-chart-bar w-5 text-center"></i>
-                <span class="font-medium">Reportes</span>
-            </a>
-        </nav>
-        <form action="logout" method="post" class="p-6 border-t border-gray-200">
-            <button type="submit" class="btn btn-error btn-block gap-2">
-                <i class="fas fa-sign-out-alt"></i>
-                Cerrar sesión
-            </button>
-        </form>
-    </aside>
+    <jsp:include page="components/sidebar.jsp" />
+
 
     <!-- Main content -->
     <main class="flex-grow p-4 md:p-8">
@@ -87,14 +69,16 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Zonas Forestales</p>
-                            <h3 class="text-3xl font-bold mt-1 text-green-600">42</h3>
+                            <h3 class="text-3xl font-bold mt-1 text-green-600"><%= zonesCount %></h3>
                         </div>
                         <div class="p-3 rounded-full bg-green-100 text-green-600">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-green-600 text-sm font-medium">+3 este mes</span>
+                        <span class="text-green-600 text-sm font-medium">
+                            <%= zoneDAO.getForestZonesAddedThisMonth() %> este mes
+                        </span>
                     </div>
                 </div>
             </div>
@@ -105,14 +89,16 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Especies de Árboles</p>
-                            <h3 class="text-3xl font-bold mt-1 text-blue-600">128</h3>
+                            <h3 class="text-3xl font-bold mt-1 text-blue-600"><%= speciesCount %></h3>
                         </div>
                         <div class="p-3 rounded-full bg-blue-100 text-blue-600">
                             <i class="fas fa-leaf"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-blue-600 text-sm font-medium">+5 este mes</span>
+                        <span class="text-blue-600 text-sm font-medium">
+                            <%= speciesDAO.getSpeciesAddedThisMonth() %> este mes
+                        </span>
                     </div>
                 </div>
             </div>
@@ -123,14 +109,16 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Actividades</p>
-                            <h3 class="text-3xl font-bold mt-1 text-purple-600">24</h3>
+                            <h3 class="text-3xl font-bold mt-1 text-purple-600"><%= activitiesCount %></h3>
                         </div>
                         <div class="p-3 rounded-full bg-purple-100 text-purple-600">
                             <i class="fas fa-hands-helping"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-purple-600 text-sm font-medium">2 programadas</span>
+                        <span class="text-purple-600 text-sm font-medium">
+                            <%= activeActivitiesCount %> activas
+                        </span>
                     </div>
                 </div>
             </div>
@@ -141,14 +129,18 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Áreas Protegidas</p>
-                            <h3 class="text-3xl font-bold mt-1 text-amber-600">18</h3>
+                            <h3 class="text-3xl font-bold mt-1 text-amber-600">
+                                <%= zoneDAO.getProtectedAreasCount() %>
+                            </h3>
                         </div>
                         <div class="p-3 rounded-full bg-amber-100 text-amber-600">
                             <i class="fas fa-shield-alt"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-amber-600 text-sm font-medium">+1 este trimestre</span>
+                        <span class="text-amber-600 text-sm font-medium">
+                            <%= zoneDAO.getProtectedAreasAddedThisQuarter() %> este trimestre
+                        </span>
                     </div>
                 </div>
             </div>
@@ -164,38 +156,29 @@
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
-                            <div class="flex items-start">
-                                <div class="p-2 rounded-full bg-green-100 text-green-600 mr-4">
-                                    <i class="fas fa-plus"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Nueva especie añadida</p>
-                                    <p class="text-sm text-gray-500">Pino (Pinus sylvestris)</p>
-                                    <p class="text-xs text-gray-400 mt-1">Hace 2 días</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="p-2 rounded-full bg-blue-100 text-blue-600 mr-4">
-                                    <i class="fas fa-edit"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Actualización de zona</p>
-                                    <p class="text-sm text-gray-500">Reserva El Bosque</p>
-                                    <p class="text-xs text-gray-400 mt-1">Hace 5 días</p>
-                                </div>
-                            </div>
+                            <% for (ConservationActivity activity : recentActivities) { %>
                             <div class="flex items-start">
                                 <div class="p-2 rounded-full bg-purple-100 text-purple-600 mr-4">
-                                    <i class="fas fa-calendar-check"></i>
+                                    <i class="fas fa-<%= getActivityIcon(activity.getActivityType()) %>"></i>
                                 </div>
                                 <div>
-                                    <p class="font-medium">Actividad programada</p>
-                                    <p class="text-sm text-gray-500">Reforestación en zona norte</p>
-                                    <p class="text-xs text-gray-400 mt-1">Programada para 2025-06-01</p>
+                                    <p class="font-medium"><%= activity.getActivityType() %></p>
+                                    <p class="text-sm text-gray-500"><%= activity.getDescription() %></p>
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        <%= activity.getStartDate() %>
+                                        <% if (activity.getEndDate() != null) { %>
+                                        - <%= activity.getEndDate() %>
+                                        <% } else { %>
+                                        (En curso)
+                                        <% } %>
+                                    </p>
                                 </div>
                             </div>
+                            <% } %>
                         </div>
-                        <button class="btn btn-ghost btn-sm mt-4 text-green-600">Ver todas las actividades</button>
+                        <a href="conservation-activities.jsp" class="btn btn-ghost btn-sm mt-4 text-green-600">
+                            Ver todas las actividades
+                        </a>
                     </div>
                 </div>
             </div>
@@ -207,22 +190,22 @@
                         <h3 class="text-xl font-semibold">Acciones Rápidas</h3>
                     </div>
                     <div class="p-6 space-y-3">
-                        <button class="btn btn-outline btn-block justify-start gap-2">
+                        <a href="forest-zones.jsp?action=add" class="btn btn-outline btn-block justify-start gap-2">
                             <i class="fas fa-plus"></i>
                             Añadir Zona Forestal
-                        </button>
-                        <button class="btn btn-outline btn-block justify-start gap-2">
+                        </a>
+                        <a href="tree-species.jsp?action=add" class="btn btn-outline btn-block justify-start gap-2">
                             <i class="fas fa-plus"></i>
                             Registrar Especie
-                        </button>
-                        <button class="btn btn-outline btn-block justify-start gap-2">
+                        </a>
+                        <a href="conservation-activities.jsp?action=add" class="btn btn-outline btn-block justify-start gap-2">
                             <i class="fas fa-calendar-plus"></i>
                             Programar Actividad
-                        </button>
-                        <button class="btn btn-outline btn-block justify-start gap-2">
+                        </a>
+                        <a href="reports.jsp" class="btn btn-outline btn-block justify-start gap-2">
                             <i class="fas fa-file-export"></i>
                             Generar Reporte
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -233,32 +216,24 @@
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
+                            <% for (ConservationActivity event : activityDAO.getUpcomingEvents(2)) { %>
                             <div class="flex items-start">
                                 <div class="text-center mr-4">
                                     <div class="bg-green-100 text-green-800 px-2 py-1 rounded">
-                                        <p class="font-bold">01</p>
-                                        <p class="text-xs">JUN</p>
+                                        <p class="font-bold"><%= event.getStartDate().toString().substring(8, 10) %></p>
+                                        <p class="text-xs"><%= getMonthAbbreviation(event.getStartDate().toString().substring(5, 7)) %></p>
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="font-medium">Reforestación zona norte</p>
-                                    <p class="text-sm text-gray-500">09:00 - 14:00</p>
+                                    <p class="font-medium"><%= event.getActivityType() %></p>
+                                    <p class="text-sm text-gray-500"><%= event.getDescription() %></p>
                                 </div>
                             </div>
-                            <div class="flex items-start">
-                                <div class="text-center mr-4">
-                                    <div class="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                        <p class="font-bold">15</p>
-                                        <p class="text-xs">JUN</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Taller de conservación</p>
-                                    <p class="text-sm text-gray-500">10:00 - 12:00</p>
-                                </div>
-                            </div>
+                            <% } %>
                         </div>
-                        <button class="btn btn-ghost btn-sm mt-4 text-green-600">Ver calendario completo</button>
+                        <a href="conservation-activities.jsp?filter=upcoming" class="btn btn-ghost btn-sm mt-4 text-green-600">
+                            Ver calendario completo
+                        </a>
                     </div>
                 </div>
             </div>
@@ -289,6 +264,48 @@
             sidebar.classList.add('hidden');
             overlay.classList.add('hidden');
         });
+
+        // Search functionality
+        document.querySelector('input[type="text"]').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim();
+                if (query) {
+                    window.location.href = 'search.jsp?query=' + encodeURIComponent(query);
+                }
+            }
+        });
     </script>
 </body>
 </html>
+
+<%!
+    private String getActivityIcon(String activityType) {
+        if (activityType == null) return "calendar-alt";
+        
+        activityType = activityType.toLowerCase();
+        if (activityType.contains("reforest")) return "tree";
+        if (activityType.contains("educ")) return "chalkboard-teacher";
+        if (activityType.contains("taller")) return "users";
+        if (activityType.contains("monitor")) return "binoculars";
+        if (activityType.contains("control")) return "bug";
+        return "calendar-alt";
+    }
+
+    private String getMonthAbbreviation(String month) {
+        switch (month) {
+            case "01": return "ENE";
+            case "02": return "FEB";
+            case "03": return "MAR";
+            case "04": return "ABR";
+            case "05": return "MAY";
+            case "06": return "JUN";
+            case "07": return "JUL";
+            case "08": return "AGO";
+            case "09": return "SEP";
+            case "10": return "OCT";
+            case "11": return "NOV";
+            case "12": return "DIC";
+            default: return month;
+        }
+    }
+%>

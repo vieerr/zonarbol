@@ -19,6 +19,7 @@
     <jsp:include page="components/sidebar.jsp" />
 
     <main class="flex-grow p-4 md:p-8">
+        
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-green-700">Especies de Árboles</h2>
             <button onclick="document.getElementById('add-species-modal').showModal()" 
