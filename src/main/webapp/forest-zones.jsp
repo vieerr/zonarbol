@@ -283,16 +283,28 @@
             }
         }
 
-        async function confirmDelete(zoneId) {
-            if (confirm("¿Está seguro que desea eliminar esta zona forestal?")) {
-                const urlString = `/zonarbol/ForestZoneServlet?action=delete&zoneId=` + zoneId;
-            
-                try {
-                    await fetch(urlString);
-                } catch (error) {
-                    console.error('Error:', error);
-                }
+        function confirmDelete(zoneId) {
+            if (!confirm("¿Está seguro que desea eliminar esta zona forestal?")) {
+                return;
             }
+            
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "ForestZoneServlet";
+
+            const inputAction = document.createElement("input");
+            inputAction.type = "hidden";
+            inputAction.name = "action";
+            inputAction.value = "delete";
+            form.appendChild(inputAction);
+
+            const inputId = document.createElement("input");
+            inputId.type = "hidden";
+            inputId.name = "zoneId";
+            inputId.value = zoneId;
+            form.appendChild(inputId);
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 </body>

@@ -49,21 +49,6 @@ public class ForestZoneServlet extends HttpServlet {
         } else {
             response.sendRedirect("forest-zones.jsp");
         }
-        
-        if ("delete".equals(action)) {
-            int zoneId = Integer.parseInt(request.getParameter("zoneId"));
-            
-            System.out.println("Eliminando zona forestal " + zoneId);
-            
-            if (zoneDAO.deleteForestZone(zoneId)) {
-                request.getSession().setAttribute("successMessage", "Especie eliminada exitosamente");
-            } else {
-                request.getSession().setAttribute("errorMessage", "Error al eliminar la especie");
-            }
-            response.sendRedirect("forest-zones.jsp");
-        } else {
-            response.sendRedirect("forest-zones.jsp");
-        }
     }
 
     @Override
@@ -126,6 +111,18 @@ public class ForestZoneServlet extends HttpServlet {
             }
             
             // Redirect to prevent duplicate submissions
+            response.sendRedirect("forest-zones.jsp");
+        }
+        
+        if("delete".equals(action)) {
+            int activityId = Integer.parseInt(request.getParameter("zoneId"));
+        
+            if (zoneDAO.deleteForestZone(activityId)) {
+                request.getSession().setAttribute("successMessage", "Actividad eliminada exitosamente");
+            } else {
+                request.getSession().setAttribute("errorMessage", "Error al eliminar la actividad");
+            }
+        
             response.sendRedirect("forest-zones.jsp");
         }
     }
