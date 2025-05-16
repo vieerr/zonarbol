@@ -91,7 +91,7 @@ public class ConservationActivityServlet extends HttpServlet {
             activity.setEstimatedBudget(Double.parseDouble(budget));
         }
         
-        activity.setState(request.getParameter("state"));
+        activity.setState("ACTIVE");
         
         if (activityDAO.addConservationActivity(activity)) {
             request.getSession().setAttribute("successMessage", "Actividad añadida exitosamente");

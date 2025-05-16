@@ -156,11 +156,11 @@
         private String getConservationStatusBadge(String status) {
             if (status == null) return "badge-ghost";
             switch (status) {
-                case "Critically Endangered": return "badge-error";
-                case "Endangered": return "badge-error";
-                case "Vulnerable": return "badge-warning";
-                case "Near Threatened": return "badge-warning";
-                case "Least Concern": return "badge-success";
+                case "Critically Endangered": return "badge-outline badge-secondary";
+                case "Endangered": return "badge-outline badge-error";
+                case "Vulnerable": return "badge-outline badge-warning";
+                case "Near Threatened": return "badge-outline badge-info";
+                case "Least Concern": return "badge-outline badge-success";
                 case "Data Deficient": return "badge-info";
                 default: return "badge-ghost";
             }

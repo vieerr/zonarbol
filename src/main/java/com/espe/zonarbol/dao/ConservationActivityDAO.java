@@ -76,7 +76,7 @@ public class ConservationActivityDAO {
                 stmt.setNull(7, Types.DECIMAL);
             }
 
-            stmt.setString(8, activity.getState());
+            stmt.setString(8, "ACTIVE");
 
             int affectedRows = stmt.executeUpdate();
 

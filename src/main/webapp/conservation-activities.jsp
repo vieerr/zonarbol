@@ -75,7 +75,6 @@
                             <th>Fechas</th>
                             <th>Entidad Responsable</th>
                             <th>Presupuesto</th>
-                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -101,11 +100,6 @@
                                 <% } %>
                             </td>
                             <td>
-                                <span class="badge <%= activity.getState().equals("ACTIVE") ? "badge-success" : "badge-error" %>">
-                                    <%= activity.getState().equals("ACTIVE") ? "Activo" : "Inactivo" %>
-                                </span>
-                            </td>
-                            <td>
                                 <div class="flex space-x-2">
                                     <button onclick="openEditActivityModal(<%= activity.getActivityId() %>)" 
                                             class="btn btn-xs btn-primary">
@@ -114,10 +108,6 @@
                                     <button onclick="confirmDeleteActivity(<%= activity.getActivityId() %>)" 
                                             class="btn btn-xs btn-error">
                                         <i class="fas fa-trash"></i>
-                                    </button>
-                                    <button onclick="viewActivityDetails(<%= activity.getActivityId() %>)" 
-                                            class="btn btn-xs btn-info">
-                                        <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
                             </td>
@@ -186,15 +176,6 @@
                         </label>
                         <textarea name="description" class="textarea textarea-bordered w-full" 
                                   rows="3" required></textarea>
-                    </div>
-                    <div>
-                        <label class="label">
-                            <span class="label-text">Estado*</span>
-                        </label>
-                        <select name="state" class="select select-bordered w-full" required>
-                            <option value="ACTIVE">Activo</option>
-                            <option value="INACTIVE">Inactivo</option>
-                        </select>
                     </div>
                 </div>
                 <div class="modal-action">
