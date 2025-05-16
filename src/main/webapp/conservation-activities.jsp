@@ -105,12 +105,14 @@
                                 <td>
                                     <div class="flex space-x-2">
                                         <button onclick="event.stopPropagation(); openEditActivityModal(<%= activity.getActivityId() %>)" 
-                                                class="btn btn-xs btn-primary">
-                                            <i class="fas fa-edit"></i>
+                                                class="btn btn-sm btn-info">
+                                            <i class="fas fa-edit text-white"></i>
+                                            <p class="text-white">Editar</p>
                                         </button>
                                         <button onclick="event.stopPropagation(); confirmDeleteActivity(<%= activity.getActivityId() %>)" 
-                                                class="btn btn-xs btn-error">
-                                            <i class="fas fa-trash"></i>
+                                                class="btn btn-sm btn-error ml-2">
+                                            <i class="fas fa-trash text-white"></i>
+                                            <p class="text-white">Eliminar</p>
                                         </button>
                                     </div>
                                 </td>
@@ -190,6 +192,56 @@
                 </form>
             </div>
         </dialog>
+        <!-- Edit Activity Modal -->
+        <dialog id="edit-activity-modal" class="modal">
+            <div class="modal-box w-11/12 max-w-5xl">
+                <h3 class="font-bold text-lg">Editar Actividad de Conservación</h3>
+                <form id="edit-activity-form" method="POST" action="ConservationActivityServlet">
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="activityId" id="editActivityId">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="label"><span class="label-text">Zona Forestal*</span></label>
+                            <select name="zoneId" id="editZoneId" class="select select-bordered w-full" required>
+                                <option value="">Seleccione una zona...</option>
+                                <% for (ForestZone zone : zoneDAO.getAllForestZones()) { %>
+                                <option value="<%= zone.getZoneId() %>"><%= zone.getZoneName() %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Tipo de Actividad*</span></label>
+                            <input type="text" name="activityType" id="editActivityType" class="input input-bordered w-full" required>
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Fecha Inicio*</span></label>
+                            <input type="date" name="startDate" id="editStartDate" class="input input-bordered w-full" required>
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Fecha Finalización</span></label>
+                            <input type="date" name="endDate" id="editEndDate" class="input input-bordered w-full">
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Entidad Responsable</span></label>
+                            <input type="text" name="responsibleEntity" id="editResponsibleEntity" class="input input-bordered w-full">
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Presupuesto Estimado (₡)</span></label>
+                            <input type="number" step="0.01" min="0" name="estimatedBudget" id="editEstimatedBudget" class="input input-bordered w-full">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="label"><span class="label-text">Descripción*</span></label>
+                            <textarea name="description" id="editDescription" class="textarea textarea-bordered w-full" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button type="button" onclick="document.getElementById('edit-activity-modal').close()" class="btn btn-ghost">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+
 
         <!-- Detail Activity Modal -->
         <dialog id="detail-activity-modal" class="modal">
@@ -246,13 +298,33 @@
                 document.getElementById('detailDescription').innerText = description || '—';
                 document.getElementById('detail-activity-modal').showModal();
             }
-            function openEditActivityModal(activityId) {
-                // Implement AJAX call to get activity details and show edit modal
-                console.log("Editing activity ID:", activityId);
-            }
+            async function openEditActivityModal(activityId) {
+                try {
+                    const url = `/zonarbol/ConservationActivityServlet?action=search&id=` + activityId;
 
+                    const response = await fetch(url);
+                    const text = await response.text();
+
+                    if (!text)
+                        throw new Error("Respuesta vacía");
+                    const data = JSON.parse(text);
+                    document.getElementById('editActivityId').value = data.activityId;
+                    document.getElementById('editZoneId').value = data.zoneId;
+                    document.getElementById('editActivityType').value = data.activityType;
+                    document.getElementById('editStartDate').value = data.startDate.split(' ')[0];
+                    document.getElementById('editEndDate').value = data.endDate ? data.endDate.split(' ')[0] : '';
+                    document.getElementById('editResponsibleEntity').value = data.responsibleEntity;
+                    document.getElementById('editEstimatedBudget').value = data.estimatedBudget;
+                    document.getElementById('editDescription').value = data.description;
+
+                    document.getElementById('edit-activity-modal').showModal();
+                } catch (err) {
+                    alert("Error al cargar los datos");
+                    console.error(err);
+                }
+            }
             function confirmDeleteActivity(activityId) {
-                if (!confirm("¿Está seguro que desea eliminar esta especie de árbol?"))
+                if (!confirm("¿Está seguro que desea eliminar esta actividad de conservación?"))
                     return;
                 const form = document.createElement("form");
                 form.method = "POST";

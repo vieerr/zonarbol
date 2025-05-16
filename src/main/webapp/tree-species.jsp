@@ -76,12 +76,14 @@
                                 <td>
                                     <div class="flex space-x-2">
                                         <button onclick="openEditSpeciesModal(<%= species.getSpeciesId() %>)" 
-                                                class="btn btn-xs btn-primary">
-                                            <i class="fas fa-edit"></i>
+                                                class="btn btn-sm btn-info">
+                                        <i class="fas fa-edit text-white"></i>
+                                        <p class="text-white">Editar</p>
                                         </button>
                                         <button onclick="confirmDeleteSpecies(<%= species.getSpeciesId() %>)" 
-                                                class="btn btn-xs btn-error">
-                                            <i class="fas fa-trash"></i>
+                                                class="btn btn-sm btn-error ml-2">
+                                        <i class="fas fa-trash text-white"></i>
+                                        <p class="text-white">Eliminar</p>
                                         </button>
                                     </div>
                                 </td>
@@ -152,6 +154,52 @@
             </div>
         </dialog>
 
+        <!-- Edit Species Modal -->
+        <dialog id="edit-species-modal" class="modal">
+            <div class="modal-box w-11/12 max-w-4xl">
+                <h3 class="font-bold text-lg">Editar Especie de Árbol</h3>
+                <form action="TreeSpeciesServlet" method="POST" class="mt-4">
+                    <input type="hidden" name="action" value="update" />
+                    <input id="edit-speciesId" type="hidden" name="speciesId" />
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="label"><span class="label-text">Nombre Científico*</span></label>
+                            <input id="edit-scientificName" type="text" name="scientificName" class="input input-bordered w-full" required />
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Nombre Común</span></label>
+                            <input id="edit-commonName" type="text" name="commonName" class="input input-bordered w-full" />
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Familia</span></label>
+                            <input id="edit-family" type="text" name="family" class="input input-bordered w-full" />
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text">Vida Promedio (años)</span></label>
+                            <input id="edit-averageLifespan" type="number" name="averageLifespan" class="input input-bordered w-full" />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="label"><span class="label-text">Estado de Conservación*</span></label>
+                            <select id="edit-conservationStatus" name="conservationStatus" class="select select-bordered w-full" required>
+                                <option value="Not Evaluated">No Evaluado</option>
+                                <option value="Least Concern">Preocupación Menor</option>
+                                <option value="Near Threatened">Casi Amenazado</option>
+                                <option value="Vulnerable">Vulnerable</option>
+                                <option value="Endangered">En Peligro</option>
+                                <option value="Critically Endangered">En Peligro Crítico</option>
+                                <option value="Data Deficient">Datos Insuficientes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button type="button" onclick="document.getElementById('edit-species-modal').close()" class="btn btn-ghost">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+
+
         <%!
             private String getConservationStatusBadge(String status) {
                 if (status == null) return "badge-ghost";
@@ -161,28 +209,47 @@
                     case "Vulnerable": return "badge-outline badge-warning";
                     case "Near Threatened": return "badge-outline badge-info";
                     case "Least Concern": return "badge-outline badge-success";
-                    case "Data Deficient": return "badge-info";
+                    case "Data Deficient": return "badge-outline badge-info";
                     default: return "badge-ghost";
                 }
             }
         %>
 
         <script>
-            function openEditSpeciesModal(speciesId) {
-                // Implement AJAX call to get species details and show edit modal
-                console.log("Editing species ID:", speciesId);
+            async function openEditSpeciesModal(speciesId) {
+                try {
+                    const url = `/zonarbol/TreeSpeciesServlet?action=search&id=` + speciesId;
+
+                    const response = await fetch(url);
+                    const text = await response.text();
+
+                    if (!text)
+                        throw new Error("Respuesta vacía");
+
+                    const species = JSON.parse(text);
+
+                    document.getElementById('edit-speciesId').value = species.speciesId;
+                    document.getElementById('edit-scientificName').value = species.scientificName || '';
+                    document.getElementById('edit-commonName').value = species.commonName || '';
+                    document.getElementById('edit-family').value = species.family || '';
+                    document.getElementById('edit-averageLifespan').value = species.averageLifespan || '';
+                    document.getElementById('edit-conservationStatus').value = species.conservationStatus || 'Not Evaluated';
+
+                    document.getElementById('edit-species-modal').showModal();
+                } catch (error) {
+                    console.error("Error al obtener los datos de la especie:", error);
+                    alert("No se pudo cargar la información de la especie.");
+                }
             }
 
             function confirmDeleteSpecies(speciesId) {
                 if (!confirm("¿Está seguro que desea eliminar esta especie de árbol?"))
                     return;
 
-                // 1) crear form
                 const form = document.createElement("form");
                 form.method = "POST";
                 form.action = "TreeSpeciesServlet";
 
-                // 2) añadir hidden inputs
                 const inputAction = document.createElement("input");
                 inputAction.type = "hidden";
                 inputAction.name = "action";
@@ -195,7 +262,6 @@
                 inputId.value = speciesId;
                 form.appendChild(inputId);
 
-                // 3) enviar
                 document.body.appendChild(form);
                 form.submit();
             }

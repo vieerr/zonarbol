@@ -97,40 +97,39 @@ public class ConservationActivityDAO {
     }
 
     // Update conservation activity
-    public boolean updateConservationActivity(ConservationActivity activity) {
-        String sql = "UPDATE conservation_activities SET zone_id = ?, activity_type = ?, "
-                + "start_date = ?, end_date = ?, description = ?, responsible_entity = ?, "
-                + "estimated_budget = ?, state = ? WHERE activity_id = ?";
+   public boolean updateConservationActivity(ConservationActivity activity) {
+    String sql = "UPDATE conservation_activities SET zone_id = ?, activity_type = ?, "
+            + "start_date = ?, end_date = ?, description = ?, responsible_entity = ?, "
+            + "estimated_budget = ? WHERE activity_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, activity.getZoneId());
-            stmt.setString(2, activity.getActivityType());
-            stmt.setDate(3, activity.getStartDate());
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setInt(1, activity.getZoneId());
+        stmt.setString(2, activity.getActivityType());
+        stmt.setDate(3, activity.getStartDate());
 
-            if (activity.getEndDate() != null) {
-                stmt.setDate(4, activity.getEndDate());
-            } else {
-                stmt.setNull(4, Types.DATE);
-            }
-
-            stmt.setString(5, activity.getDescription());
-            stmt.setString(6, activity.getResponsibleEntity());
-
-            if (activity.getEstimatedBudget() != null) {
-                stmt.setDouble(7, activity.getEstimatedBudget());
-            } else {
-                stmt.setNull(7, Types.DECIMAL);
-            }
-
-            stmt.setString(8, activity.getState());
-            stmt.setInt(9, activity.getActivityId());
-
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        if (activity.getEndDate() != null) {
+            stmt.setDate(4, activity.getEndDate());
+        } else {
+            stmt.setNull(4, Types.DATE);
         }
+
+        stmt.setString(5, activity.getDescription());
+        stmt.setString(6, activity.getResponsibleEntity());
+
+        if (activity.getEstimatedBudget() != null) {
+            stmt.setDouble(7, activity.getEstimatedBudget());
+        } else {
+            stmt.setNull(7, Types.DECIMAL);
+        }
+
+        stmt.setInt(8, activity.getActivityId());
+
+        return stmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
     }
+}
 
     // Delete conservation activity
     public boolean deleteConservationActivity(int activityId) {
