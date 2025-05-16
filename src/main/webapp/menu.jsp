@@ -62,7 +62,7 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <!-- Card: Total Forest Zones -->
             <div class="card bg-white shadow-md rounded-lg overflow-hidden">
                 <div class="p-6">
@@ -123,27 +123,6 @@
                 </div>
             </div>
 
-            <!-- Card: Protected Areas -->
-            <div class="card bg-white shadow-md rounded-lg overflow-hidden">
-                <div class="p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Áreas Protegidas</p>
-                            <h3 class="text-3xl font-bold mt-1 text-amber-600">
-                                <%= zoneDAO.getProtectedAreasCount() %>
-                            </h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-amber-100 text-amber-600">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <span class="text-amber-600 text-sm font-medium">
-                            <%= zoneDAO.getProtectedAreasAddedThisQuarter() %> este trimestre
-                        </span>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Main Content Grid -->
@@ -209,33 +188,6 @@
                     </div>
                 </div>
 
-                <!-- Upcoming Events -->
-                <div class="card bg-white shadow-md rounded-lg overflow-hidden mt-6">
-                    <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-xl font-semibold">Próximos Eventos</h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-4">
-                            <% for (ConservationActivity event : activityDAO.getUpcomingEvents(2)) { %>
-                            <div class="flex items-start">
-                                <div class="text-center mr-4">
-                                    <div class="bg-green-100 text-green-800 px-2 py-1 rounded">
-                                        <p class="font-bold"><%= event.getStartDate().toString().substring(8, 10) %></p>
-                                        <p class="text-xs"><%= getMonthAbbreviation(event.getStartDate().toString().substring(5, 7)) %></p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="font-medium"><%= event.getActivityType() %></p>
-                                    <p class="text-sm text-gray-500"><%= event.getDescription() %></p>
-                                </div>
-                            </div>
-                            <% } %>
-                        </div>
-                        <a href="conservation-activities.jsp?filter=upcoming" class="btn btn-ghost btn-sm mt-4 text-green-600">
-                            Ver calendario completo
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
