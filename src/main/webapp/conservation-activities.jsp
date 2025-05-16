@@ -104,11 +104,11 @@
                                 </td>
                                 <td>
                                     <div class="flex space-x-2">
-                                        <button onclick="openEditActivityModal(<%= activity.getActivityId() %>)" 
+                                        <button onclick="event.stopPropagation(); openEditActivityModal(<%= activity.getActivityId() %>)" 
                                                 class="btn btn-xs btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button onclick="confirmDeleteActivity(<%= activity.getActivityId() %>)" 
+                                        <button onclick="event.stopPropagation(); confirmDeleteActivity(<%= activity.getActivityId() %>)" 
                                                 class="btn btn-xs btn-error">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -252,10 +252,25 @@
             }
 
             function confirmDeleteActivity(activityId) {
-                if (confirm("¿Está seguro que desea eliminar esta actividad de conservación?")) {
-                    // Implement delete functionality
-                    console.log("Deleting activity ID:", activityId);
-                }
+                if (!confirm("¿Está seguro que desea eliminar esta especie de árbol?"))
+                    return;
+                const form = document.createElement("form");
+                form.method = "POST";
+                form.action = "ConservationActivityServlet";
+
+                const inputAction = document.createElement("input");
+                inputAction.type = "hidden";
+                inputAction.name = "action";
+                inputAction.value = "delete";
+                form.appendChild(inputAction);
+
+                const inputId = document.createElement("input");
+                inputId.type = "hidden";
+                inputId.name = "activityId";
+                inputId.value = activityId;
+                form.appendChild(inputId);
+                document.body.appendChild(form);
+                form.submit();
             }
         </script>
     </body>
