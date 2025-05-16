@@ -5,6 +5,15 @@
 <%
     ForestZoneDAO zoneDAO = new ForestZoneDAO();
     List<ForestZone> zones = zoneDAO.getAllForestZones();
+    
+    // Get unique values for filters
+    java.util.Set<String> provinces = new java.util.HashSet<>();
+    java.util.Set<String> forestTypes = new java.util.HashSet<>();
+    
+    for (ForestZone zone : zones) {
+        provinces.add(zone.getProvince());
+        forestTypes.add(zone.getForestType());
+    }
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -29,31 +38,33 @@
         </div>
 
         <!-- Filter and Search -->
-<!--        <div class="bg-white p-4 rounded-lg shadow mb-6">
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="label">Provincia</label>
-                    <select class="select select-bordered w-full">
-                        <option>Todas</option>
-                        <option>San José</option>
-                        <option>Limón</option>
-                        <option>Puntarenas</option>
+                    <select id="filter-province" class="select select-bordered w-full" onchange="filterZones()">
+                        <option value="">Todas</option>
+                        <% for (String province : provinces) { %>
+                            <option value="<%= province %>"><%= province %></option>
+                        <% } %>
                     </select>
                 </div>
                 <div>
                     <label class="label">Cantón</label>
-                    <input type="text" placeholder="Buscar cantón..." class="input input-bordered w-full">
+                    <input id="filter-canton" type="text" placeholder="Buscar cantón..." 
+                           class="input input-bordered w-full" oninput="filterZones()">
                 </div>
                 <div>
-                    <label class="label">Estado</label>
-                    <select class="select select-bordered w-full">
-                        <option>Todos</option>
-                        <option>Activo</option>
-                        <option>Inactivo</option>
+                    <label class="label">Tipo de Bosque</label>
+                    <select id="filter-forest-type" class="select select-bordered w-full" onchange="filterZones()">
+                        <option value="">Todos</option>
+                        <% for (String type : forestTypes) { %>
+                            <option value="<%= type %>"><%= type %></option>
+                        <% } %>
                     </select>
                 </div>
             </div>
-        </div>-->
+        </div>
 
         <!-- Zones Table -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -68,9 +79,12 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="zones-table-body">
                         <% for (ForestZone zone : zones) { %>
-                        <tr>
+                        <tr class="zone-row" 
+                            data-province="<%= zone.getProvince() %>"
+                            data-canton="<%= zone.getCanton() %>"
+                            data-forest-type="<%= zone.getForestType() %>">
                             <td><%= zone.getZoneName() %></td>
                             <td><%= zone.getProvince() %>, <%= zone.getCanton() %></td>
                             <td><%= String.format("%,.2f", zone.getTotalAreaHectares()) %></td>
@@ -154,31 +168,31 @@
 
     <script>
         const zoneLocation = {
-  "Azuay": ["Girón", "Cuenca", "Gualaceo", "Paute", "Santa Isabel", "Pucará", "San Fernando", "Chordeleg", "El Pan", "Sevilla de Oro", "Guachapala", "Sigsig", "Oña", "Nabón", "Ponce Enríquez"],
-  "Bolívar": ["Guaranda", "Chillanes", "Chimbo", "Echeandía", "San Miguel", "Caluma", "Las Naves"],
-  "Cañar": ["Azogues", "Biblián", "Cañar", "La Troncal", "El Tambo", "Déleg", "Suscal"],
-  "Carchi": ["Tulcán", "Bolívar", "Espejo", "Mira", "Montúfar", "San Pedro de Huaca"],
-  "Chimborazo": ["Riobamba", "Alausí", "Colta", "Chambo", "Chunchi", "Guamote", "Guano", "Pallatanga", "Penipe", "Cumandá"],
-  "Cotopaxi": ["Latacunga", "La Maná", "Pangua", "Pujilí", "Salcedo", "Saquisilí", "Sigchos"],
-  "El Oro": ["Machala", "Arenillas", "Atahualpa", "Balsas", "Chilla", "El Guabo", "Huaquillas", "Marcabelí", "Pasaje", "Piñas", "Portovelo", "Santa Rosa", "Zaruma", "Las Lajas"],
-  "Esmeraldas": ["Esmeraldas", "Eloy Alfaro", "Muisne", "Quinindé", "San Lorenzo", "Atacames", "Río Verde", "La Concordia"],
-  "Galápagos": ["San Cristóbal", "Santa Cruz", "Isabela"],
-  "Guayas": ["Guayaquil", "Alfredo Baquerizo Moreno", "Balao", "Balzar", "Colimes", "Coronel Marcelino Maridueña", "Daule", "Durán", "El Empalme", "El Triunfo", "General Antonio Elizalde", "Isidro Ayora", "Lomas de Sargentillo", "Milagro", "Naranjal", "Naranjito", "Nobol", "Palestina", "Pedro Carbo", "Playas", "Salitre", "Samborondón", "Santa Lucía", "Simón Bolívar", "Yaguachi"],
-  "Imbabura": ["Ibarra", "Antonio Ante", "Cotacachi", "Otavalo", "Pimampiro", "San Miguel de Urcuquí"],
-  "Loja": ["Loja", "Calvas", "Catamayo", "Celica", "Chaguarpamba", "Espíndola", "Gonzanamá", "Macará", "Olmedo", "Paltas", "Puyango", "Quilanga", "Saraguro", "Sozoranga", "Zapotillo", "Pindal"],
-  "Los Ríos": ["Babahoyo", "Baba", "Montalvo", "Puebloviejo", "Quevedo", "Urdaneta", "Ventanas", "Vínces", "Palenque", "Buena Fé", "Valencia", "Mocache", "Quinsaloma"],
-  "Manabí": ["Portoviejo", "Bolívar", "Chone", "El Carmen", "Flavio Alfaro", "Jama", "Jaramijó", "Jipijapa", "Junín", "Manta", "Montecristi", "Olmedo", "Paján", "Pedernales", "Pichincha", "Puerto López", "Rocafuerte", "San Vicente", "Santa Ana", "Sucre", "Tosagua", "Veinticuatro de Mayo"],
-  "Morona Santiago": ["Macas", "Gualaquiza", "Limón Indanza", "Palora", "Santiago", "Sucúa", "Huamboya", "San Juan Bosco", "Taisha", "Logroño", "Pablo Sexto", "Tiwintza"],
-  "Napo": ["Tena", "Archidona", "El Chaco", "Quijos", "Carlos Julio Arosemena Tola"],
-  "Orellana": ["Francisco de Orellana", "Aguarico", "La Joya de los Sachas", "Loreto"],
-  "Pastaza": ["Puyo", "Arajuno", "Mera", "Santa Clara"],
-  "Pichincha": ["Quito", "Cayambe", "Mejía", "Pedro Moncayo", "Rumiñahui", "San Miguel de los Bancos", "Pedro Vicente Maldonado", "Puerto Quito"],
-  "Santa Elena": ["Santa Elena", "La Libertad", "Salinas"],
-  "Santo Domingo de los Tsáchilas": ["Santo Domingo", "La Concordia"],
-  "Sucumbíos": ["Nueva Loja", "Cascales", "Cuyabeno", "Gonzalo Pizarro", "Lago Agrio", "Putumayo", "Shushufindi"],
-  "Tungurahua": ["Ambato", "Baños de Agua Santa", "Cevallos", "Mocha", "Patate", "Pelileo", "Píllaro", "Quero", "Tisaleo"],
-  "Zamora Chinchipe": ["Zamora", "Chinchipe", "Nangaritza", "Yacuambi", "Yantzaza", "El Pangui", "Centinela del Cóndor", "Palanda", "Paquisha"]
-};
+            "Azuay": ["Girón", "Cuenca", "Gualaceo", "Paute", "Santa Isabel", "Pucará", "San Fernando", "Chordeleg", "El Pan", "Sevilla de Oro", "Guachapala", "Sigsig", "Oña", "Nabón", "Ponce Enríquez"],
+            "Bolívar": ["Guaranda", "Chillanes", "Chimbo", "Echeandía", "San Miguel", "Caluma", "Las Naves"],
+            "Cañar": ["Azogues", "Biblián", "Cañar", "La Troncal", "El Tambo", "Déleg", "Suscal"],
+            "Carchi": ["Tulcán", "Bolívar", "Espejo", "Mira", "Montúfar", "San Pedro de Huaca"],
+            "Chimborazo": ["Riobamba", "Alausí", "Colta", "Chambo", "Chunchi", "Guamote", "Guano", "Pallatanga", "Penipe", "Cumandá"],
+            "Cotopaxi": ["Latacunga", "La Maná", "Pangua", "Pujilí", "Salcedo", "Saquisilí", "Sigchos"],
+            "El Oro": ["Machala", "Arenillas", "Atahualpa", "Balsas", "Chilla", "El Guabo", "Huaquillas", "Marcabelí", "Pasaje", "Piñas", "Portovelo", "Santa Rosa", "Zaruma", "Las Lajas"],
+            "Esmeraldas": ["Esmeraldas", "Eloy Alfaro", "Muisne", "Quinindé", "San Lorenzo", "Atacames", "Río Verde", "La Concordia"],
+            "Galápagos": ["San Cristóbal", "Santa Cruz", "Isabela"],
+            "Guayas": ["Guayaquil", "Alfredo Baquerizo Moreno", "Balao", "Balzar", "Colimes", "Coronel Marcelino Maridueña", "Daule", "Durán", "El Empalme", "El Triunfo", "General Antonio Elizalde", "Isidro Ayora", "Lomas de Sargentillo", "Milagro", "Naranjal", "Naranjito", "Nobol", "Palestina", "Pedro Carbo", "Playas", "Salitre", "Samborondón", "Santa Lucía", "Simón Bolívar", "Yaguachi"],
+            "Imbabura": ["Ibarra", "Antonio Ante", "Cotacachi", "Otavalo", "Pimampiro", "San Miguel de Urcuquí"],
+            "Loja": ["Loja", "Calvas", "Catamayo", "Celica", "Chaguarpamba", "Espíndola", "Gonzanamá", "Macará", "Olmedo", "Paltas", "Puyango", "Quilanga", "Saraguro", "Sozoranga", "Zapotillo", "Pindal"],
+            "Los Ríos": ["Babahoyo", "Baba", "Montalvo", "Puebloviejo", "Quevedo", "Urdaneta", "Ventanas", "Vínces", "Palenque", "Buena Fé", "Valencia", "Mocache", "Quinsaloma"],
+            "Manabí": ["Portoviejo", "Bolívar", "Chone", "El Carmen", "Flavio Alfaro", "Jama", "Jaramijó", "Jipijapa", "Junín", "Manta", "Montecristi", "Olmedo", "Paján", "Pedernales", "Pichincha", "Puerto López", "Rocafuerte", "San Vicente", "Santa Ana", "Sucre", "Tosagua", "Veinticuatro de Mayo"],
+            "Morona Santiago": ["Macas", "Gualaquiza", "Limón Indanza", "Palora", "Santiago", "Sucúa", "Huamboya", "San Juan Bosco", "Taisha", "Logroño", "Pablo Sexto", "Tiwintza"],
+            "Napo": ["Tena", "Archidona", "El Chaco", "Quijos", "Carlos Julio Arosemena Tola"],
+            "Orellana": ["Francisco de Orellana", "Aguarico", "La Joya de los Sachas", "Loreto"],
+            "Pastaza": ["Puyo", "Arajuno", "Mera", "Santa Clara"],
+            "Pichincha": ["Quito", "Cayambe", "Mejía", "Pedro Moncayo", "Rumiñahui", "San Miguel de los Bancos", "Pedro Vicente Maldonado", "Puerto Quito"],
+            "Santa Elena": ["Santa Elena", "La Libertad", "Salinas"],
+            "Santo Domingo de los Tsáchilas": ["Santo Domingo", "La Concordia"],
+            "Sucumbíos": ["Nueva Loja", "Cascales", "Cuyabeno", "Gonzalo Pizarro", "Lago Agrio", "Putumayo", "Shushufindi"],
+            "Tungurahua": ["Ambato", "Baños de Agua Santa", "Cevallos", "Mocha", "Patate", "Pelileo", "Píllaro", "Quero", "Tisaleo"],
+            "Zamora Chinchipe": ["Zamora", "Chinchipe", "Nangaritza", "Yacuambi", "Yantzaza", "El Pangui", "Centinela del Cóndor", "Palanda", "Paquisha"]
+        };
 
         const provinceSelect = document.getElementById('province');
         const cantonSelect   = document.getElementById('canton');
@@ -200,7 +214,7 @@
       
             const cantones = zoneLocation[province].sort();
 
-		cantones.forEach(canton => {
+            cantones.forEach(canton => {
                 const optionElement = document.createElement('option');
                 optionElement.value = canton;
                 optionElement.textContent = canton;
@@ -305,6 +319,31 @@
             form.appendChild(inputId);
             document.body.appendChild(form);
             form.submit();
+        }
+        
+        // Filter functionality
+        function filterZones() {
+            const provinceFilter = document.getElementById('filter-province').value.toLowerCase();
+            const cantonFilter = document.getElementById('filter-canton').value.toLowerCase();
+            const forestTypeFilter = document.getElementById('filter-forest-type').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('.zone-row');
+            
+            rows.forEach(row => {
+                const province = row.getAttribute('data-province').toLowerCase();
+                const canton = row.getAttribute('data-canton').toLowerCase();
+                const forestType = row.getAttribute('data-forest-type').toLowerCase();
+                
+                const provinceMatch = provinceFilter === '' || province === provinceFilter;
+                const cantonMatch = cantonFilter === '' || canton.includes(cantonFilter);
+                const forestTypeMatch = forestTypeFilter === '' || forestType === forestTypeFilter;
+                
+                if (provinceMatch && cantonMatch && forestTypeMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>

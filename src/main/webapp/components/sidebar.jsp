@@ -39,7 +39,7 @@
             <span class="font-medium">Reportes</span>
         </a>
     </nav>
-    <form action="logout" method="post" class="p-6 border-t border-gray-200">
+    <form action="/zonarbol" method="get" class="p-6 border-t border-gray-200">
         <button type="submit" class="btn btn-error btn-block gap-2">
             <i class="fas fa-sign-out-alt"></i>
             Cerrar sesión

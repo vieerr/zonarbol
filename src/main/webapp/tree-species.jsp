@@ -2,9 +2,24 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.espe.zonarbol.model.TreeSpecies" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.HashSet" %>
 <%
     TreeSpeciesDAO speciesDAO = new TreeSpeciesDAO();
     List<TreeSpecies> speciesList = speciesDAO.getAllTreeSpecies();
+    
+    // Get unique values for filters
+    Set<String> families = new HashSet<>();
+    Set<String> conservationStatuses = new HashSet<>();
+    
+    for (TreeSpecies species : speciesList) {
+        if (species.getFamily() != null && !species.getFamily().isEmpty()) {
+            families.add(species.getFamily());
+        }
+        if (species.getConservationStatus() != null) {
+            conservationStatuses.add(species.getConservationStatus());
+        }
+    }
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,7 +34,6 @@
         <jsp:include page="components/sidebar.jsp" />
 
         <main class="flex-grow p-4 md:p-8">
-
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-green-700">Especies de Árboles</h2>
                 <button onclick="document.getElementById('add-species-modal').showModal()" 
@@ -31,17 +45,34 @@
 
             <!-- Filter and Search -->
             <div class="bg-white p-4 rounded-lg shadow mb-6">
-                <div class="flex items-center gap-4">
-                    <div class="flex-grow">
-                        <input type="text" placeholder="Buscar por nombre científico o común..." 
-                               class="input input-bordered w-full">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="label">
+                            <span class="label-text">Buscar por nombre</span>
+                        </label>
+                        <input type="text" id="search-name" placeholder="Científico o común..." 
+                               class="input input-bordered w-full" oninput="filterSpecies()">
                     </div>
                     <div>
-                        <select class="select select-bordered">
-                            <option>Todas las familias</option>
-                            <option>Fagaceae</option>
-                            <option>Meliaceae</option>
-                            <option>Fabaceae</option>
+                        <label class="label">
+                            <span class="label-text">Familia</span>
+                        </label>
+                        <select id="filter-family" class="select select-bordered w-full" onchange="filterSpecies()">
+                            <option value="">Todas</option>
+                            <% for (String family : families) { %>
+                                <option value="<%= family %>"><%= family %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">
+                            <span class="label-text">Estado de Conservación</span>
+                        </label>
+                        <select id="filter-status" class="select select-bordered w-full" onchange="filterSpecies()">
+                            <option value="">Todos</option>
+                            <% for (String status : conservationStatuses) { %>
+                                <option value="<%= status %>"><%= status %></option>
+                            <% } %>
                         </select>
                     </div>
                 </div>
@@ -61,16 +92,20 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="species-table-body">
                             <% for (TreeSpecies species : speciesList) { %>
-                            <tr>
+                            <tr class="species-row" 
+                                data-scientific="<%= species.getScientificName().toLowerCase() %>"
+                                data-common="<%= species.getCommonName() != null ? species.getCommonName().toLowerCase() : "" %>"
+                                data-family="<%= species.getFamily() != null ? species.getFamily() : "" %>"
+                                data-status="<%= species.getConservationStatus() != null ? species.getConservationStatus() : "" %>">
                                 <td><em><%= species.getScientificName() %></em></td>
-                                <td><%= species.getCommonName() %></td>
-                                <td><%= species.getFamily() %></td>
+                                <td><%= species.getCommonName() != null ? species.getCommonName() : "N/A" %></td>
+                                <td><%= species.getFamily() != null ? species.getFamily() : "N/A" %></td>
                                 <td><%= species.getAverageLifespan() != null ? species.getAverageLifespan() + " años" : "N/A" %></td>
                                 <td>
                                     <span class="badge <%= getConservationStatusBadge(species.getConservationStatus()) %>">
-                                        <%= species.getConservationStatus() %>
+                                        <%= species.getConservationStatus() != null ? species.getConservationStatus() : "N/A" %>
                                     </span>
                                 </td>
                                 <td>
@@ -199,7 +234,6 @@
             </div>
         </dialog>
 
-
         <%!
             private String getConservationStatusBadge(String status) {
                 if (status == null) return "badge-ghost";
@@ -264,6 +298,39 @@
 
                 document.body.appendChild(form);
                 form.submit();
+            }
+            
+            // Filter functionality for species
+            function filterSpecies() {
+                const searchTerm = document.getElementById('search-name').value.toLowerCase();
+                const familyFilter = document.getElementById('filter-family').value;
+                const statusFilter = document.getElementById('filter-status').value;
+                
+                const rows = document.querySelectorAll('.species-row');
+                
+                rows.forEach(row => {
+                    const scientific = row.getAttribute('data-scientific');
+                    const common = row.getAttribute('data-common');
+                    const family = row.getAttribute('data-family');
+                    const status = row.getAttribute('data-status');
+                    
+                    // Name filter (matches either scientific or common name)
+                    const nameMatch = searchTerm === '' || 
+                                      scientific.includes(searchTerm) || 
+                                      common.includes(searchTerm);
+                    
+                    // Family filter
+                    const familyMatch = familyFilter === '' || family === familyFilter;
+                    
+                    // Status filter
+                    const statusMatch = statusFilter === '' || status === statusFilter;
+                    
+                    if (nameMatch && familyMatch && statusMatch) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             }
         </script>
     </body>
