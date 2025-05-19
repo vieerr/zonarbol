@@ -1,7 +1,6 @@
 package com.espe.zonarbol.routes;
 
-import com.espe.zonarbol.dao.TreeSpeciesDAO;
-import com.espe.zonarbol.model.TreeSpecies;
+import com.espe.zonarbol.service.TreeSpeciesService;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,11 +12,13 @@ import java.io.IOException;
 @WebServlet("/TreeSpeciesServlet")
 public class TreeSpeciesServlet extends HttpServlet {
 
-    private TreeSpeciesDAO speciesDAO;
+    private TreeSpeciesService speciesService;
+    private Gson gson;
 
     @Override
     public void init() {
-        speciesDAO = new TreeSpeciesDAO();
+        speciesService = new TreeSpeciesService();
+        gson = new Gson();
     }
 
     @Override
@@ -32,19 +33,20 @@ public class TreeSpeciesServlet extends HttpServlet {
 
         switch (action) {
             case "add":
-                addTreeSpecies(request, response);
+                speciesService.handleAddSpecies(request);
                 break;
             case "update":
-                updateTreeSpecies(request, response);
+                speciesService.handleUpdateSpecies(request);
                 break;
             case "delete":
-                deleteTreeSpecies(request, response);
+                speciesService.handleDeleteSpecies(request);
                 break;
-            default:
-                response.sendRedirect("tree-species.jsp");
         }
+        
+        response.sendRedirect("tree-species.jsp");
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -55,90 +57,24 @@ public class TreeSpeciesServlet extends HttpServlet {
         }
 
         if ("search".equals(action)) {
-            String idParam = request.getParameter("id");
-            if (idParam != null && !idParam.isEmpty()) {
-                int id = Integer.parseInt(idParam);
-                TreeSpecies species = speciesDAO.getTreeSpeciesById(id);
-                response.setContentType("application/json");
-                response.getWriter().write(new Gson().toJson(species));
-                return;
-            }
-
-            String query = request.getParameter("query");
-            request.setAttribute("speciesList", speciesDAO.searchTreeSpecies(query));
-            request.getRequestDispatcher("tree-species.jsp").forward(request, response);
+            handleSearchRequest(request, response);
         } else {
             response.sendRedirect("tree-species.jsp");
         }
     }
 
-    private void addTreeSpecies(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        TreeSpecies species = new TreeSpecies();
-        species.setScientificName(request.getParameter("scientificName"));
-        species.setCommonName(request.getParameter("commonName"));
-        species.setFamily(request.getParameter("family"));
-
-        String lifespan = request.getParameter("averageLifespan");
-        if (lifespan != null && !lifespan.isEmpty()) {
-            species.setAverageLifespan(Integer.parseInt(lifespan));
+    private void handleSearchRequest(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        String idParam = request.getParameter("id");
+        if (idParam != null && !idParam.isEmpty()) {
+            int id = Integer.parseInt(idParam);
+            response.setContentType("application/json");
+            response.getWriter().write(gson.toJson(speciesService.getSpeciesById(id)));
+            return;
         }
 
-        species.setConservationStatus(request.getParameter("conservationStatus"));
-
-        if (speciesDAO.addTreeSpecies(species)) {
-            request.getSession().setAttribute("successMessage", "Especie añadida exitosamente");
-        } else {
-            request.getSession().setAttribute("errorMessage", "Error al añadir la especie");
-        }
-
-        response.sendRedirect("tree-species.jsp");
-    }
-
-    private void updateTreeSpecies(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        int speciesId = Integer.parseInt(request.getParameter("speciesId"));
-        String scientificName = request.getParameter("scientificName");
-        String commonName = request.getParameter("commonName");
-        String family = request.getParameter("family");
-        String conservationStatus = request.getParameter("conservationStatus");
-
-        int averageLifespan = 0;
-        String lifespanParam = request.getParameter("averageLifespan");
-        if (lifespanParam != null && !lifespanParam.isEmpty()) {
-            averageLifespan = Integer.parseInt(lifespanParam);
-        }
-
-        TreeSpecies species = new TreeSpecies();
-        species.setSpeciesId(speciesId);
-        species.setScientificName(scientificName);
-        species.setCommonName(commonName);
-        species.setFamily(family);
-        species.setAverageLifespan(averageLifespan);
-        species.setConservationStatus(conservationStatus);
-
-        // Intentar actualizar en BD
-        if (speciesDAO.updateTreeSpecies(species)) {
-            request.getSession().setAttribute("successMessage", "Especie actualizada exitosamente");
-        } else {
-            request.getSession().setAttribute("errorMessage", "Error al actualizar la especie");
-        }
-
-        // Redirección para evitar reenvíos
-        response.sendRedirect("tree-species.jsp");
-    }
-
-    private void deleteTreeSpecies(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        int speciesId = Integer.parseInt(request.getParameter("speciesId"));
-
-        if (speciesDAO.deleteTreeSpecies(speciesId)) {
-            request.getSession().setAttribute("successMessage", "Especie eliminada exitosamente");
-        } else {
-            request.getSession().setAttribute("errorMessage", "Error al eliminar la especie");
-        }
-
-        response.sendRedirect("tree-species.jsp");
+        String query = request.getParameter("query");
+        request.setAttribute("speciesList", speciesService.searchSpecies(query));
+        request.getRequestDispatcher("tree-species.jsp").forward(request, response);
     }
 }
