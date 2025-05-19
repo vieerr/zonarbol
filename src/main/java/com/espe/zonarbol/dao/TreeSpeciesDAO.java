@@ -231,4 +231,86 @@ public class TreeSpeciesDAO {
         return speciesList;
     }
 
+    public List<TreeSpecies> getTreeSpeciesByZone(int zoneId) throws SQLException {
+        List<TreeSpecies> speciesList = new ArrayList<>();
+        String sql = "SELECT ts.* FROM zone_species zs "
+                + "JOIN tree_species ts ON zs.species_id = ts.species_id "
+                + "WHERE zs.zone_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, zoneId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                speciesList.add(mapToTreeSpecies(rs));
+            }
+        }
+        return speciesList;
+    }
+
+    public List<TreeSpecies> getTreeSpeciesByActivity(int activityId) throws SQLException {
+        List<TreeSpecies> speciesList = new ArrayList<>();
+        String sql = "SELECT ts.* FROM activity_species aspec "
+                + "JOIN tree_species ts ON aspec.species_id = ts.species_id "
+                + "WHERE aspec.activity_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, activityId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                speciesList.add(mapToTreeSpecies(rs));
+            }
+        }
+        return speciesList;
+    }
+
+    public Integer getTreeSpeciesQuantityByActivity(int activityId, int speciesId) throws SQLException {
+        String sql = "SELECT quantity_affected FROM activity_species "
+                + "WHERE activity_id = ? AND species_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, activityId);
+            stmt.setInt(2, speciesId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("quantity_affected");
+            }
+            return null; // o return 0; según requerimiento
+        }
+    }
+
+    public Integer getTreeSpeciesPopulationByZone(int zoneId, int speciesId) throws SQLException {
+        String sql = "SELECT population_estimate FROM zone_species "
+                + "WHERE zone_id = ? AND species_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, zoneId);
+            stmt.setInt(2, speciesId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("population_estimate");
+            }
+            return null; // o return 0; según requerimiento
+        }
+    }
+
+    private TreeSpecies mapToTreeSpecies(ResultSet rs) throws SQLException {
+        TreeSpecies species = new TreeSpecies();
+        species.setSpeciesId(rs.getInt("species_id"));
+        species.setScientificName(rs.getString("scientific_name"));
+        species.setCommonName(rs.getString("common_name"));
+        species.setFamily(rs.getString("family"));
+
+        // Handle nullable integer field
+        int lifespan = rs.getInt("average_lifespan");
+        species.setAverageLifespan(rs.wasNull() ? null : lifespan);
+
+        species.setConservationStatus(rs.getString("conservation_status"));
+        species.setFirstRegistered(rs.getTimestamp("first_registered"));
+        return species;
+    }
+
 }
