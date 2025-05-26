@@ -51,11 +51,12 @@ function loadGroupButtons() {
       <i class="fas fa-plus"></i>
       Agregar árbol
     </button>
-    <button onclick="openAddActivityModal()" class="text-white border-2 border-green-600 rounded-xl w-full bg-green-600 p-4 my-2">
-       <i class="fas fa-plus"></i>
-       Agregar actividad
-    </button>
 	`;
+
+  // <button onclick="openAddActivityModal()" class="text-white border-2 border-green-600 rounded-xl w-full bg-green-600 p-4 my-2">
+  //      <i class="fas fa-plus"></i>
+  //      Agregar actividad
+  //   </button>
 }
 
 async function getPopulationFromTree(specieId){
