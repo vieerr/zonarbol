@@ -36,7 +36,7 @@ function updateZoneInfo(zone) {
 		<div class="my-8">
 			<label class="text-black">
 				<span class="font-semibold">Extensión:</span>
-				<span> ${zone.totalAreaHectares} ha</span></label></div>
+				<span> ${zone.totalAreaHectares} hectareas</span></label></div>
 	`;
 }
 

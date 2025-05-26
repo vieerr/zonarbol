@@ -31,9 +31,9 @@
                 </div>
             </aside>
             <section class="bg-gray-100 p-4 grid grid-rows-[1fr_1fr] gap-4 w-full">
-                <div class="min-h-0 overflow-y-auto p-4">
+                <div>
                     <h3 class="text-2xl font-bold text-green-700">Especies incluidas</h3>
-                    <div id="species-wrapper">
+                    <div id="species-wrapper" class="max-h-64 overflow-y-auto space-y-4">
                         <div class="my-4 border-2 border-lime-500 rounded-xl p-4">
                             <div class="rounded-sm text-center font-bold">
                                 Seleccione una Zona
@@ -41,9 +41,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="min-h-0 overflow-y-auto p-4">
+                <div>
                     <h3 class="text-2xl font-bold text-green-700">Actividades vinculadas</h3>
-                    <div id="activities-wrapper">
+                    <div id="activities-wrapper" class="max-h-64 overflow-y-auto space-y-4">
                         <div class="my-4 border-2 border-green-600 rounded-xl p-4">
                             <div class="rounded-sm text-center font-bold">
                                 Seleccione una Zona
