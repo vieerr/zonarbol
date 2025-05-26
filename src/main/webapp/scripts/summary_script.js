@@ -58,7 +58,24 @@ function loadGroupButtons() {
 	`;
 }
 
-function updateSpecieInfo(specie) {
+async function getPopulationFromTree(specieId){
+	try {
+        const reqString = `/zonarbol/SummaryServerlet?action=getTreePopulation&zoneId=${currentZone.zoneId}&specieId=${specieId}`;
+        const response = await fetch(reqString);
+                      
+        const population = await response.json();
+
+				console.log(population);
+				
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+async function updateSpecieInfo(specie) {
+	const treePopulation = await getPopulationFromTree(specie.specieId);
+	
 	return `
 		<div class="my-4 border-2 border-lime-500 rounded-xl p-4">
       <div class="rounded-sm text-center font-bold">
@@ -95,7 +112,7 @@ function updateSpecieInfo(specie) {
               <div class="m-6"> 
                   <label class="text-black">
                       <span class="font-semibold">Población estimada:</span>
-                      <span>AGREGAR VALOR</span>
+                      <span>${treePopulation}</span>
                   </label>
               </div>
           </div>
@@ -126,8 +143,8 @@ async function loadSpeciesFromZone(zoneId) {
 
 				speciesWrapper.innerHTML = "";
 
-				currentSpecies.forEach(specie => {
-					const containerHtml = updateSpecieInfo(specie);
+				currentSpecies.forEach(async specie => {
+					const containerHtml = await updateSpecieInfo(specie);
 					speciesWrapper.innerHTML += containerHtml;
 				});        
     } catch (error) {
@@ -238,17 +255,78 @@ function resetWrappers() {
 	`;
 }
 
-document.getElementById('zoneName').addEventListener('change', function() {              
+document.getElementById('zoneName').addEventListener('change', async function() {              
     const index = this.selectedIndex;
     
     if(index != 0){
       const selectedOption = this.options[index];
       const zoneId = selectedOption.getAttribute("related-zone-id");
-      loadZoneData(zoneId);
-      loadSpeciesFromZone(zoneId);
+      await loadZoneData(zoneId);
+      await loadSpeciesFromZone(zoneId);
 			loadActivitiesFromZone(zoneId);
     } else {
       resetWrappers();
       currentZone = null;
     }
 });
+
+
+//Form related stuff
+const formModal = document.getElementById('base-modal-form');
+const specieSelect = document.getElementById('commonName');
+
+specieSelect.addEventListener('change', function() {
+  const index = this.selectedIndex;
+    
+  if(index != 0){
+    const selectedOption = this.options[index];
+    const specieId = selectedOption.getAttribute("related-specie-id");
+    document.getElementById('input-specieId').value = specieId;
+  } else {
+    document.getElementById('input-specieId').value = "0";
+  }
+});
+
+function openAddTreeModal() {
+    document.getElementById('form-title').innerHTML = `Añadir árbol a la zona ${currentZone.zoneName}`;
+    document.getElementById('input-action').value = "add_specie";
+		document.getElementById('input-zoneId').value = currentZone.zoneId;
+
+    document.getElementById('commonName').value = "";
+		document.getElementById('input-populationEstimate').value = "";
+
+    formModal.show();
+}
+
+// async function openEditModal(zoneId) {
+//     const urlString = `/zonarbol/ForestZoneServlet?action=search&zoneId=` + zoneId;
+    
+//     try {
+//         const response = await fetch(urlString);
+//         const data = await response.json();
+//         console.log(data);
+//         placeDataInForm(data);
+//         formModal.show();
+//     } catch (error) {
+//         console.error('Error:', error);
+//     }
+// }
+
+
+
+// function placeDataInForm(data){
+//     document.getElementById('form-title').innerHTML = 'Actualizar Zona Forestal';
+    
+//     document.getElementById('input-action').value = "update";
+//     document.getElementById('input-zoneId').value = data.zoneId;
+//     document.getElementById('input-zoneName').value = data.zoneName;
+//     document.getElementById('input-forestType').value = data.forestType;
+    
+//     selectOption(provinceSelect, data.province);
+//     loadCantones(data.province);
+//     selectOption(cantonSelect, data.canton);
+    
+//     document.getElementById('input-totalAreaHectares').value = data.totalAreaHectares;
+    
+//     document.getElementById('canton').disabled = false;
+// }

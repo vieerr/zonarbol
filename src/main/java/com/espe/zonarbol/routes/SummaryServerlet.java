@@ -2,6 +2,7 @@ package com.espe.zonarbol.routes;
 
 import com.espe.zonarbol.service.ConservationActivityService;
 import com.espe.zonarbol.service.ForestZoneService;
+import com.espe.zonarbol.service.SummaryService;
 import com.espe.zonarbol.service.TreeSpeciesService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +20,7 @@ public class SummaryServerlet extends HttpServlet {
     private ConservationActivityService activityService;
     private TreeSpeciesService treeSpeciesService;
     private ForestZoneService zoneService;
+    private SummaryService summaryService;
     private Gson gson;
     
     @Override
@@ -26,6 +28,7 @@ public class SummaryServerlet extends HttpServlet {
         activityService = new ConservationActivityService();
         treeSpeciesService = new TreeSpeciesService();
         zoneService = new ForestZoneService();
+        summaryService = new SummaryService();
         gson = new GsonBuilder()
                 .disableHtmlEscaping()
                 .create();
@@ -59,7 +62,6 @@ public class SummaryServerlet extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
             
             try (PrintWriter out = response.getWriter()) {
-                
                 out.print(gson.toJson(treeSpeciesService.getSpeciesByZone(zoneId)));
             }
         } 
@@ -74,9 +76,39 @@ public class SummaryServerlet extends HttpServlet {
                 
                 out.print(gson.toJson(activityService.getActivitiesByZone(zoneId)));
             }
-        } else {
+        } 
+        
+        else if("getTreePopulation".equals(action)){
+            int zoneId = Integer.parseInt(request.getParameter("zoneId"));
+            int specieId = Integer.parseInt(request.getParameter("specieId"));
+            
+            response.setContentType("text/plain");
+            response.setCharacterEncoding("UTF-8");
+            
+            try (PrintWriter out = response.getWriter()) {
+                out.print(summaryService.getTreePopulationFromZone(zoneId, specieId));
+            }
+        }else {
             response.sendRedirect("summary.jsp");
         }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String action = request.getParameter("action");
+        
+        if (action == null) {
+            response.sendRedirect("summary.jsp");
+            return;
+        }
+        
+        if ("add_specie".equals(action)) {
+            System.out.println("Enviando solicitud para guardar en DB");
+            summaryService.handleAddTreeToZone(request);
+        }
+        
+        response.sendRedirect("summary.jsp");
     }
 
 }

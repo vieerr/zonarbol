@@ -63,15 +63,16 @@
         <dialog id="base-modal-form" class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
                 <h3 id="form-title" class="font-bold text-lg">Title</h3>
-                <form action="ForestZoneServlet" method="POST" class="mt-4">
+                <form action="SummaryServerlet" method="POST" class="mt-4">
                     <input id="input-action" type="hidden" name="action" value="add">
                     <input id="input-zoneId" type="hidden" name="zoneId" value="0">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="input-specieId" type="hidden" name="specieId" value="0">
+                    <div class="grid grid-cols-1 gap-4">
                         <div>
                             <label class="label">
                                 <span class="label-text">Especie de árbol*</span>
                             </label>
-                            <select id="input-commonName" name="commonName" class="select select-bordered w-full" required>
+                            <select id="commonName" name="commonName" class="select select-bordered w-full" required>
                                 <option value="">Seleccione...</option>
                                 <% for (TreeSpecies specie : speciesList) { %>
                                 <option value="<%= specie.getCommonName() %>" related-specie-id="<%= specie.getSpeciesId()%>"><%= specie.getCommonName() %></option>
