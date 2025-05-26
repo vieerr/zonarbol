@@ -27,7 +27,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-green-700">Actividades de Conservación</h2>
                 <button onclick="document.getElementById('add-activity-modal').showModal()" 
-                        class="btn btn-success gap-2">
+                        class="btn btn-success gap-2 text-white">
                     <i class="fas fa-plus"></i>
                     Nueva Actividad
                 </button>

@@ -31,7 +31,7 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-green-700">Zonas Forestales</h2>
             <button onclick="openAddModal()" 
-                    class="btn btn-soft btn-success">
+                    class="btn btn-soft btn-success text-white">
                 <i class="fas fa-plus"></i>
                 Nueva Zona
             </button>
@@ -91,11 +91,11 @@
                             <td><%= zone.getForestType() %></td>
                             <td>
                                 <div class="flex space-x-2">
-<!--                                    <button onclick="openEditModal(<%= zone.getZoneId() %>)" 
+                                    <button onclick="openEditModal(<%= zone.getZoneId() %>)" 
                                             class="btn btn-sm btn-info">
                                         <i class="fas fa-edit text-white"></i>
                                         <p class="text-white">Editar</p>
-                                    </button>-->
+                                    </button>
                                     <button onclick="confirmDelete(<%= zone.getZoneId() %>)" 
                                             class="btn btn-sm btn-error ml-2">
                                         <i class="fas fa-trash text-white"></i>

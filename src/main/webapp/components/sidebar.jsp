@@ -44,7 +44,7 @@
         </a>
     </nav>
     <form action="/zonarbol" method="get" class="p-6 border-t border-gray-200">
-        <button type="submit" class="btn btn-error btn-block gap-2">
+        <button type="submit" class="btn btn-error btn-block gap-2 text-white">
             <i class="fas fa-sign-out-alt"></i>
             Cerrar sesión
         </button>
