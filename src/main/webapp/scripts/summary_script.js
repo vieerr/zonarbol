@@ -1,13 +1,14 @@
-let currentZoneData = null;
+let currentZone = null;
 let currentSpecies = null;
+let currentActivities = null;
 
 async function loadZoneData(zoneId) {
     try {
         const reqString = "/zonarbol/SummaryServerlet?action=getZoneData&zoneId=" + zoneId;
         const response = await fetch(reqString);
-        currentZoneData = await response.json();
+        currentZone = await response.json();
     
-        updateZoneInfo(currentZoneData);
+        updateZoneInfo(currentZone);
     } catch (error) {
         console.error('Error:', error);
     }
@@ -36,7 +37,24 @@ function updateZoneInfo(zone) {
 		<div class="my-8">
 			<label class="text-black">
 				<span class="font-semibold">Extensión:</span>
-				<span> ${zone.totalAreaHectares} hectareas</span></label></div>
+				<span> ${zone.totalAreaHectares} hectareas</span>
+			</label>
+		</div>
+	`;
+
+	loadGroupButtons();
+}
+
+function loadGroupButtons() {
+	document.getElementById('zone-info-wrapper').innerHTML += `
+		<button onclick="openAddTreeModal()" class="text-white border-2 border-lime-500 rounded-xl w-full bg-lime-500 p-4 my-2">
+      <i class="fas fa-plus"></i>
+      Agregar árbol
+    </button>
+    <button onclick="openAddActivityModal()" class="text-white border-2 border-green-600 rounded-xl w-full bg-green-600 p-4 my-2">
+       <i class="fas fa-plus"></i>
+       Agregar actividad
+    </button>
 	`;
 }
 
@@ -91,11 +109,11 @@ async function loadSpeciesFromZone(zoneId) {
         const reqString = "/zonarbol/SummaryServerlet?action=getZoneSpecies&zoneId=" + zoneId;
         const response = await fetch(reqString);
                       
-        const speciesContainers = await response.json();
+        currentSpecies = await response.json();
 
 				const speciesWrapper = document.getElementById("species-wrapper");
 
-				if(speciesContainers.length === 0){
+				if(currentSpecies.length === 0){
 					speciesWrapper.innerHTML = `
 						<div class="my-4 border-2 border-lime-500 rounded-xl p-4">
     					<div class="rounded-sm text-center font-bold">
@@ -108,7 +126,7 @@ async function loadSpeciesFromZone(zoneId) {
 
 				speciesWrapper.innerHTML = "";
 
-				speciesContainers.forEach(specie => {
+				currentSpecies.forEach(specie => {
 					const containerHtml = updateSpecieInfo(specie);
 					speciesWrapper.innerHTML += containerHtml;
 				});        
@@ -172,11 +190,11 @@ async function loadActivitiesFromZone(zoneId) {
         const reqString = "/zonarbol/SummaryServerlet?action=getZoneActivities&zoneId=" + zoneId;
         const response = await fetch(reqString);
                       
-        const activitiesContainers = await response.json();
+        currentActivities = await response.json();
 
 				const activitiesWrapper = document.getElementById("activities-wrapper");
 
-				if(activitiesContainers.length === 0){
+				if(currentActivities.length === 0){
 					activitiesWrapper.innerHTML = `
 						<div class="my-4 border-2 border-green-600 rounded-xl p-4">
     					<div class="rounded-sm text-center font-bold">
@@ -189,7 +207,7 @@ async function loadActivitiesFromZone(zoneId) {
 
 				activitiesWrapper.innerHTML = "";
 
-				activitiesContainers.forEach(activity => {
+				currentActivities.forEach(activity => {
 					const containerHtml = updateActivityInfo(activity);
 					activitiesWrapper.innerHTML += containerHtml;
 				});        
@@ -218,7 +236,6 @@ function resetWrappers() {
     	</div>
     </div>
 	`;
-
 }
 
 document.getElementById('zoneName').addEventListener('change', function() {              
@@ -232,6 +249,6 @@ document.getElementById('zoneName').addEventListener('change', function() {
 			loadActivitiesFromZone(zoneId);
     } else {
       resetWrappers();
-      currentZoneData = null;
+      currentZone = null;
     }
 });

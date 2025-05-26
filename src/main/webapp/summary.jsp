@@ -3,9 +3,14 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.espe.zonarbol.model.ForestZone" %>
 <%@ page import="com.espe.zonarbol.dao.ForestZoneDAO" %>
+<%@ page import="com.espe.zonarbol.dao.TreeSpeciesDAO" %>
+<%@ page import="com.espe.zonarbol.model.TreeSpecies" %>
 <%
     ForestZoneDAO zoneDAO = new ForestZoneDAO();
     List<ForestZone> zones = zoneDAO.getAllForestZones();
+    
+    TreeSpeciesDAO speciesDAO = new TreeSpeciesDAO();
+    List<TreeSpecies> speciesList = speciesDAO.getAllTreeSpecies();
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -53,6 +58,42 @@
                 </div>
             </section>
         </main>
+                
+        <!-- Add Zone Modal -->
+        <dialog id="base-modal-form" class="modal">
+            <div class="modal-box w-11/12 max-w-5xl">
+                <h3 id="form-title" class="font-bold text-lg">Title</h3>
+                <form action="ForestZoneServlet" method="POST" class="mt-4">
+                    <input id="input-action" type="hidden" name="action" value="add">
+                    <input id="input-zoneId" type="hidden" name="zoneId" value="0">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="label">
+                                <span class="label-text">Especie de árbol*</span>
+                            </label>
+                            <select id="input-commonName" name="commonName" class="select select-bordered w-full" required>
+                                <option value="">Seleccione...</option>
+                                <% for (TreeSpecies specie : speciesList) { %>
+                                <option value="<%= specie.getCommonName() %>" related-specie-id="<%= specie.getSpeciesId()%>"><%= specie.getCommonName() %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label">
+                                <span class="label-text">Población estimada*</span>
+                            </label>
+                            <input id="input-populationEstimate" type="number" step="1" min="1" name="populationEstimate" 
+                               placeholder="Ej: 700" class="input input-bordered w-full" required>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button type="button" onclick="document.getElementById('base-modal-form').close()" 
+                            class="btn btn-ghost">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Añadir</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
     </body>
     
     <script src="scripts/summary_script.js"></script>
