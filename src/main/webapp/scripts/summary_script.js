@@ -62,11 +62,9 @@ async function getPopulationFromTree(specieId){
 	try {
         const reqString = `/zonarbol/SummaryServerlet?action=getTreePopulation&zoneId=${currentZone.zoneId}&specieId=${specieId}`;
         const response = await fetch(reqString);
-                      
-        const population = await response.json();
+        const text = await response.text();
 
-				console.log(population);
-				
+        return parseInt(text);
     } catch (error) {
         console.error('Error:', error);
     }
@@ -74,8 +72,8 @@ async function getPopulationFromTree(specieId){
 
 
 async function updateSpecieInfo(specie) {
-	const treePopulation = await getPopulationFromTree(specie.specieId);
-	
+  const treePopulation = await getPopulationFromTree(specie.speciesId);
+
 	return `
 		<div class="my-4 border-2 border-lime-500 rounded-xl p-4">
       <div class="rounded-sm text-center font-bold">
@@ -117,6 +115,18 @@ async function updateSpecieInfo(specie) {
               </div>
           </div>
       </div>
+      <div class="flex space-x-2 justify-end">
+        <button onclick="openEditTreeModal(${specie.speciesId})" 
+                class="btn btn-sm btn-info">
+            <i class="fas fa-edit text-white"></i>
+            <p class="text-white">Editar</p>
+        </button>
+        <button onclick="confirmRemoveTreeFromZone(${specie.speciesId})" 
+                class="btn btn-sm btn-error ml-2">
+            <i class="fas fa-trash text-white"></i>
+            <p class="text-white">Quitar</p>
+        </button>
+      </div>
 		</div>	
 	`
 }
@@ -146,7 +156,7 @@ async function loadSpeciesFromZone(zoneId) {
 				currentSpecies.forEach(async specie => {
 					const containerHtml = await updateSpecieInfo(specie);
 					speciesWrapper.innerHTML += containerHtml;
-				});        
+				});
     } catch (error) {
         console.error('Error:', error);
     }
@@ -295,38 +305,87 @@ function openAddTreeModal() {
     document.getElementById('commonName').value = "";
 		document.getElementById('input-populationEstimate').value = "";
 
+    document.getElementById('commonName').disabled = false;
+
+    document.getElementById('btn-sumbit-action').innerText = "Añadir";
+   
     formModal.show();
 }
 
-// async function openEditModal(zoneId) {
-//     const urlString = `/zonarbol/ForestZoneServlet?action=search&zoneId=` + zoneId;
+async function openEditTreeModal(specieId) {
+  const urlSpecie = `/zonarbol/TreeSpeciesServlet?action=search&id=${specieId}`
+  const urlPopulation = `/zonarbol/SummaryServerlet?action=getTreePopulation&zoneId=${currentZone.zoneId}&specieId=${specieId}`;
+
+  try {
+      const resSpecies = await fetch(urlSpecie);
+      const dataSpecies = await resSpecies.json();
+      const resPopulation = await fetch(urlPopulation);
+      const dataPopulation = await resPopulation.text();
+
+      const data = {
+        specieId: dataSpecies.speciesId,
+        commonName: dataSpecies.commonName,
+        populationEstimate: dataPopulation
+      }
+
+      placeZoneSpecieDataInForm(data);
+      
+      formModal.show();
+  } catch (error) {
+      console.error('Error:', error);
+  }
+}
+
+function placeZoneSpecieDataInForm(data){
+    document.getElementById('form-title').innerHTML = 'Actualizar población de árbol';
     
-//     try {
-//         const response = await fetch(urlString);
-//         const data = await response.json();
-//         console.log(data);
-//         placeDataInForm(data);
-//         formModal.show();
-//     } catch (error) {
-//         console.error('Error:', error);
-//     }
-// }
+    document.getElementById('input-action').value = "update_specie";
+    document.getElementById('input-zoneId').value = currentZone.zoneId;
+    document.getElementById('input-specieId').value = data.specieId; 
+    selectOption(document.getElementById('commonName'), data.commonName);
+    
+    document.getElementById('input-populationEstimate').value = data.populationEstimate;
+    
+    document.getElementById('commonName').disabled = true;
+
+    document.getElementById('btn-sumbit-action').innerText = "Actualizar";
+}
+
+function confirmRemoveTreeFromZone(specieId) {
+  if (!confirm("¿Está seguro que desea quitar este árbol de esta zona forestal?")) {
+      return;
+  }
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "SummaryServerlet";
+  const inputAction = document.createElement("input");
+  inputAction.type = "hidden";
+  inputAction.name = "action";
+  inputAction.value = "delete_specie";
+  form.appendChild(inputAction);
+  const inputZoneId = document.createElement("input");
+  inputZoneId.type = "hidden";
+  inputZoneId.name = "zoneId";
+  inputZoneId.value = currentZone.zoneId;
+  form.appendChild(inputZoneId);
+  const inputActivityId = document.createElement("input");
+  inputActivityId.type = "hidden";
+  inputActivityId.name = "speciesId";
+  inputActivityId.value = specieId;
+  form.appendChild(inputActivityId);
+  document.body.appendChild(form);
+  form.submit();
+}
 
 
+function selectOption(selectInput, targetValue){
+  const options = selectInput.options;
 
-// function placeDataInForm(data){
-//     document.getElementById('form-title').innerHTML = 'Actualizar Zona Forestal';
-    
-//     document.getElementById('input-action').value = "update";
-//     document.getElementById('input-zoneId').value = data.zoneId;
-//     document.getElementById('input-zoneName').value = data.zoneName;
-//     document.getElementById('input-forestType').value = data.forestType;
-    
-//     selectOption(provinceSelect, data.province);
-//     loadCantones(data.province);
-//     selectOption(cantonSelect, data.canton);
-    
-//     document.getElementById('input-totalAreaHectares').value = data.totalAreaHectares;
-    
-//     document.getElementById('canton').disabled = false;
-// }
+  for (let i = 0; i < options.length; i++) {
+    if (options[i].value === targetValue) {
+      options[i].selected = true;
+      break;
+    }
+  }
+}

@@ -59,7 +59,7 @@
             </section>
         </main>
                 
-        <!-- Add Zone Modal -->
+        <!-- Add ZoneSpecie Modal -->
         <dialog id="base-modal-form" class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
                 <h3 id="form-title" class="font-bold text-lg">Title</h3>
@@ -90,7 +90,7 @@
                     <div class="modal-action">
                         <button type="button" onclick="document.getElementById('base-modal-form').close()" 
                             class="btn btn-ghost">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Añadir</button>
+                        <button id="btn-sumbit-action" type="submit" class="btn btn-success">Añadir</button>
                     </div>
                 </form>
             </div>

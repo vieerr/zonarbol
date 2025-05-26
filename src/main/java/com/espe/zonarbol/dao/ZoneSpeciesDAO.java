@@ -36,7 +36,6 @@ public class ZoneSpeciesDAO {
         return 0;
     }
     
-    // Add new tree species
     public boolean addZoneSpecie(ZoneSpecies zoneSpecies) {
         String sql = "INSERT INTO zone_species (zone_id, species_id, population_estimate) VALUES (?, ?, ?)";
 
@@ -52,6 +51,40 @@ public class ZoneSpeciesDAO {
             }
             
             return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean updateZoneSpecie(ZoneSpecies zoneSpecies) {
+        String sql = "UPDATE zone_species SET population_estimate = ? WHERE zone_id = ? AND species_id = ?;";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, zoneSpecies.getPopulationEstimate());
+            stmt.setInt(2, zoneSpecies.getZoneId());
+            stmt.setInt(3, zoneSpecies.getSpeciesId());   
+            
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                return false;
+            }
+            
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean deleteZoneSpecie(int zoneId, int speciesId) {
+        String sql = "DELETE FROM zone_species WHERE zone_id = ? AND species_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, zoneId);
+            stmt.setInt(2, speciesId);
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

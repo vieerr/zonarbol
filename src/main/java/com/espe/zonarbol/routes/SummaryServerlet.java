@@ -104,8 +104,15 @@ public class SummaryServerlet extends HttpServlet {
         }
         
         if ("add_specie".equals(action)) {
-            System.out.println("Enviando solicitud para guardar en DB");
             summaryService.handleAddTreeToZone(request);
+        }
+        
+        if("update_specie".equals(action)) {
+            summaryService.handleUpdateTreeToZone(request);
+        }
+        
+        if("delete_specie".equals(action)) {
+            summaryService.handleDeleteTreeToZone(request);
         }
         
         response.sendRedirect("summary.jsp");

@@ -1,20 +1,14 @@
 
 package com.espe.zonarbol.service;
 
-import com.espe.zonarbol.dao.ForestZoneDAO;
-import com.espe.zonarbol.dao.TreeSpeciesDAO;
 import com.espe.zonarbol.dao.ZoneSpeciesDAO;
 import com.espe.zonarbol.model.ZoneSpecies;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class SummaryService {
-    private TreeSpeciesDAO treeSpeciesDAO;
-    private ForestZoneDAO forestZoneDAO;
     private ZoneSpeciesDAO zoneSpecieDAO;
     
     public SummaryService(){
-        treeSpeciesDAO = new TreeSpeciesDAO();
-        forestZoneDAO = new ForestZoneDAO();
         zoneSpecieDAO = new ZoneSpeciesDAO();
     }
     
@@ -29,6 +23,27 @@ public class SummaryService {
             request.getSession().setAttribute("successMessage", "Árbol añadido exitosamente a la zona");
         } else {
             request.getSession().setAttribute("errorMessage", "Error al añadir el árbol a la zona");
+        }
+    }
+    
+    public void handleUpdateTreeToZone(HttpServletRequest request) {
+        ZoneSpecies newZoneSpecie = buildZoneSpecieFromRequest(request);
+        
+        if (zoneSpecieDAO.updateZoneSpecie(newZoneSpecie)) {
+            request.getSession().setAttribute("successMessage", "Población de árbol actualziada exitosamente");
+        } else {
+            request.getSession().setAttribute("errorMessage", "Error al actualizar la población de árbol");
+        }
+    }
+    
+    public void handleDeleteTreeToZone(HttpServletRequest request) {
+        int zoneId = Integer.parseInt(request.getParameter("zoneId"));
+        int speciesId = Integer.parseInt(request.getParameter("speciesId"));
+        
+        if (zoneSpecieDAO.deleteZoneSpecie(zoneId, speciesId)) {
+            request.getSession().setAttribute("successMessage", "Especie eliminada exitosamente");
+        } else {
+            request.getSession().setAttribute("errorMessage", "Error al eliminar la especie");
         }
     }
     
