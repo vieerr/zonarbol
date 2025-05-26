@@ -6,7 +6,7 @@
     }
 %>
 <!-- Sidebar -->
-<aside class="w-64 bg-white shadow-lg flex flex-col hidden md:flex">
+<aside class="w-64 h-screen bg-white sticky top-0 text-nowrap shadow-lg flex flex-col hidden md:flex">
     <div class="p-6 border-b border-gray-200">
         <div class="flex items-center space-x-3">
             <div class="text-3xl text-green-600">
@@ -18,23 +18,27 @@
         <p class="text-sm text-gray-600 mt-2">Usuario: <strong><%= username%></strong></p>
     </div>
     <nav class="flex-grow p-4 space-y-1">
-        <a href="menu.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
+        <a href="menu.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all break-words whitespace-normal">
             <i class="fas fa-home w-5 text-center"></i>
             <span class="font-medium">Inicio</span>
         </a>
-        <a href="forest-zones.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
+        <a href="summary.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all break-words whitespace-normal">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span class="font-medium">Resumen</span>
+        </a>
+        <a href="forest-zones.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all break-words whitespace-normal">
             <i class="fas fa-map-marked-alt w-5 text-center"></i>
             <span class="font-medium">Zonas Forestales</span>
         </a>
-        <a href="tree-species.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
+        <a href="tree-species.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all break-words whitespace-normal">
             <i class="fas fa-leaf w-5 text-center"></i>
             <span class="font-medium">Especies de Árboles</span>
         </a>
-        <a href="conservation-activities.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
+        <a href="conservation-activities.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all break-words whitespace-normal">
             <i class="fas fa-hands-helping w-5 text-center"></i>
             <span class="font-medium">Actividades de Conservación</span>
         </a>
-        <a href="reports.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all">
+        <a href="reports.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all break-words whitespace-normal">
             <i class="fas fa-chart-bar w-5 text-center"></i>
             <span class="font-medium">Reportes</span>
         </a>

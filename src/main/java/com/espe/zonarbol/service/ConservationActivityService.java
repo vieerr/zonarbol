@@ -5,6 +5,7 @@ import com.espe.zonarbol.dao.ForestZoneDAO;
 import com.espe.zonarbol.model.ConservationActivity;
 import jakarta.servlet.http.HttpServletRequest;
 import java.sql.Date;
+import java.util.List;
 
 public class ConservationActivityService {
     private ConservationActivityDAO activityDAO;
@@ -17,6 +18,10 @@ public class ConservationActivityService {
 
     public ConservationActivity getActivityById(int id) {
         return activityDAO.getConservationActivityById(id);
+    }
+    
+    public List<ConservationActivity> getActivitiesByZone(int zoneId) {
+        return activityDAO.getActivitiesByZone(zoneId);
     }
 
     public void handleAddActivity(HttpServletRequest request) {

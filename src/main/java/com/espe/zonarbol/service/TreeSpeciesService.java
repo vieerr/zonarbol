@@ -3,6 +3,7 @@ package com.espe.zonarbol.service;
 import com.espe.zonarbol.dao.TreeSpeciesDAO;
 import com.espe.zonarbol.model.TreeSpecies;
 import jakarta.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 import java.util.List;
 
 public class TreeSpeciesService {
@@ -18,6 +19,10 @@ public class TreeSpeciesService {
 
     public List<TreeSpecies> searchSpecies(String query) {
         return speciesDAO.searchTreeSpecies(query);
+    }
+    
+    public List<TreeSpecies> getSpeciesByZone(int zoneId) {
+        return speciesDAO.getTreeSpeciesByZone(zoneId);
     }
 
     public void handleAddSpecies(HttpServletRequest request) {

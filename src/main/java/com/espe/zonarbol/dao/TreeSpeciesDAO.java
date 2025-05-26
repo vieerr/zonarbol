@@ -231,7 +231,7 @@ public class TreeSpeciesDAO {
         return speciesList;
     }
 
-    public List<TreeSpecies> getTreeSpeciesByZone(int zoneId) throws SQLException {
+    public List<TreeSpecies> getTreeSpeciesByZone(int zoneId) {
         List<TreeSpecies> speciesList = new ArrayList<>();
         String sql = "SELECT ts.* FROM zone_species zs "
                 + "JOIN tree_species ts ON zs.species_id = ts.species_id "
@@ -244,6 +244,8 @@ public class TreeSpeciesDAO {
             while (rs.next()) {
                 speciesList.add(mapToTreeSpecies(rs));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return speciesList;
     }
