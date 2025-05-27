@@ -157,5 +157,5 @@ INSERT INTO roles (role_id, role_name) VALUES
 (2, 'Observador');
 
 INSERT INTO users (user_id, user_name, user_password, role_id) VALUES
-(1, 'admin', 'admin', 1),
-(2, 'guest', 'guest', 2);
+(1, 'admin', 'nnEor72DtqzSXIrvqLqnIg==', 1),
+(2, 'guest', 'BmQdkniS9/KFj8FHon79oA==', 2);

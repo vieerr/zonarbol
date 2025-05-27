@@ -2,9 +2,10 @@ package com.espe.zonarbol.service;
 
 import com.espe.zonarbol.dao.UserDAO;
 import com.espe.zonarbol.model.User;
+import com.espe.zonarbol.utils.Encryption;
 
 public class LoginService {
-    private UserDAO userDAO; 
+    private UserDAO userDAO;
     
     public LoginService(){
         userDAO = new UserDAO();
@@ -17,10 +18,8 @@ public class LoginService {
             return false;
         }
         
-        if(userFound.getUserPassword().equals(password)){
-            return true;
-        }
+        String usrPwd = userDAO.getUserPassword(userFound.getUserId());
         
-        return false;
+        return Encryption.comparePasswords(password, usrPwd);
     }
 }

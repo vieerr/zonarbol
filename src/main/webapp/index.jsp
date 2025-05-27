@@ -23,10 +23,6 @@
 
             <button type="submit" class="btn btn-success mt-4">Ingresar</button>
         </form>
-
-        <p class="text-sm text-center text-gray-500 mt-4">
-            Usuario: <strong>admin</strong> &nbsp;&nbsp; Contraseña: <strong>admin</strong>
-        </p>
     </div>
 </body>
 </html>
