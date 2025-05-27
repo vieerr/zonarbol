@@ -67,6 +67,7 @@ public class ConservationActivityServlet extends HttpServlet {
             if (idParam != null && !idParam.isEmpty()) {
                 int id = Integer.parseInt(idParam);
                 response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(gson.toJson(activityService.getActivityById(id)));
                 return;
             }
