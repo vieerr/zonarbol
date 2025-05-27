@@ -4,10 +4,10 @@ import com.espe.zonarbol.dao.UserDAO;
 import com.espe.zonarbol.model.User;
 import com.espe.zonarbol.utils.Encryption;
 
-public class LoginService {
+public class AuthService {
     private UserDAO userDAO;
     
-    public LoginService(){
+    public AuthService(){
         userDAO = new UserDAO();
     }
 

@@ -55,7 +55,8 @@
             <span class="font-medium">Reportes</span>
         </a>
     </nav>
-    <form action="/zonarbol" method="get" class="p-6 border-t border-gray-200">
+    <form action="auth" method="post" class="p-6 border-t border-gray-200">
+        <input type="hidden" name="action" value="logout">
         <button type="submit" class="btn btn-error btn-block gap-2 text-white">
             <i class="fas fa-sign-out-alt"></i>
             Cerrar sesión
