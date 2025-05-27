@@ -1,14 +1,26 @@
 package com.espe.zonarbol.service;
 
-public class LoginService {
+import com.espe.zonarbol.dao.UserDAO;
+import com.espe.zonarbol.model.User;
 
-    // Hardcoded credentials for now. Later: check DB.
-    private final String validUsername = "admin";
-    private final String validPassword = "admin";
+public class LoginService {
+    private UserDAO userDAO; 
+    
+    public LoginService(){
+        userDAO = new UserDAO();
+    }
 
     public boolean authenticate(String username, String password) {
-        return username != null && password != null &&
-               username.equals(validUsername) &&
-               password.equals(validPassword);
+        User userFound = userDAO.getUserByName(username);
+        
+        if(userFound == null){
+            return false;
+        }
+        
+        if(userFound.getUserPassword().equals(password)){
+            return true;
+        }
+        
+        return false;
     }
 }

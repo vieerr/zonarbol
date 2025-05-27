@@ -84,6 +84,23 @@ CREATE TABLE IF NOT EXISTS `zone_species` (
         ON UPDATE CASCADE
 ) COMMENT='Distribución de especies en zonas';
 
+-- Tabla Roles
+CREATE TABLE IF NOT EXISTS `roles` (
+  `role_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `role_name` VARCHAR(255) NOT NULL
+) COMMENT='Registro de roles';
+
+-- Tabla Users
+CREATE TABLE IF NOT EXISTS `users` (
+  `user_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_name` VARCHAR(255) NOT NULL UNIQUE,
+  `user_password` VARCHAR(255) NOT NULL,
+  `role_id` INT NOT NULL,
+  FOREIGN KEY (`role_id`) 
+        REFERENCES `roles`(`role_id`) 
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE
+) COMMENT='Registro de usuarios';
 
 -- Inserciones
 INSERT INTO forest_zones (zone_name, province, canton, total_area_hectares, forest_type)
@@ -133,3 +150,12 @@ VALUES
 (4, 5, 700),
 (5, 2, 320),
 (5, 5, 150);
+
+
+INSERT INTO roles (role_id, role_name) VALUES
+(1, 'Administrador'),
+(2, 'Observador');
+
+INSERT INTO users (user_id, user_name, user_password, role_id) VALUES
+(1, 'admin', 'admin', 1),
+(2, 'guest', 'guest', 2);
