@@ -1,5 +1,16 @@
+<%@page import="com.espe.zonarbol.dao.UserDAO"%>
+<%@page import="com.espe.zonarbol.dao.RoleDAO"%>
+<%@page import="com.espe.zonarbol.model.User"%>
+<%@page import="com.espe.zonarbol.model.Role"%>
 <%
     String username = (String) session.getAttribute("username");
+    
+    UserDAO userDAO = new UserDAO();
+    RoleDAO roleDAO = new RoleDAO();
+    
+    User currentUser = userDAO.getUserByName(username);
+    Role usrRole = roleDAO.getRoleById(currentUser.getUserId());
+    
     if (username == null) {
         response.sendRedirect("index.jsp");
         return;
@@ -16,6 +27,7 @@
             <h1 class="text-2xl font-bold text-green-700">ZonArbol</h1>
         </div>
         <p class="text-sm text-gray-600 mt-2">Usuario: <strong><%= username%></strong></p>
+        <p class="text-sm text-gray-600 mt-2">Rol: <strong><%= usrRole.getRoleName()%></strong></p>
     </div>
     <nav class="flex-grow p-4 space-y-1">
         <a href="menu.jsp" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all break-words whitespace-normal">

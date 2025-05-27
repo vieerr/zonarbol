@@ -1,13 +1,11 @@
 package com.espe.zonarbol.dao;
 
-import com.espe.zonarbol.model.TreeSpecies;
 import com.espe.zonarbol.model.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 
 public class UserDAO {
     private Connection connection;
