@@ -2,7 +2,16 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.espe.zonarbol.model.ForestZone" %>
 <%@ page import="com.espe.zonarbol.dao.ForestZoneDAO" %>
+<%@ page import="com.espe.zonarbol.utils.RoleCheck" %>
 <%
+    String username = (String) session.getAttribute("username");
+    Integer roleId = (Integer) session.getAttribute("roleId");
+    
+    if (username == null || roleId == null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+    
     ForestZoneDAO zoneDAO = new ForestZoneDAO();
     List<ForestZone> zones = zoneDAO.getAllForestZones();
     
@@ -31,9 +40,10 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-green-700">Zonas Forestales</h2>
             <button onclick="openAddModal()" 
-                    class="btn btn-soft btn-success text-white">
-                <i class="fas fa-plus"></i>
-                Nueva Zona
+                    class="btn btn-soft btn-success text-white"
+                    <%= RoleCheck.evaluteAdd(roleId) ? "" : "disabled" %>>
+                <i class="fas fa-plus text-white"></i>
+                <p class="text-white">Nueva Zona</p>
             </button>
         </div>
 
@@ -92,12 +102,12 @@
                             <td>
                                 <div class="flex space-x-2">
                                     <button onclick="openEditModal(<%= zone.getZoneId() %>)" 
-                                            class="btn btn-sm btn-info">
+                                            class="btn btn-sm btn-info" <%= RoleCheck.evaluteEdit(roleId) ? "" : "disabled" %>>
                                         <i class="fas fa-edit text-white"></i>
                                         <p class="text-white">Editar</p>
                                     </button>
                                     <button onclick="confirmDelete(<%= zone.getZoneId() %>)" 
-                                            class="btn btn-sm btn-error ml-2">
+                                            class="btn btn-sm btn-error ml-2" <%= RoleCheck.evaluteDelete(roleId) ? "" : "disabled" %>>
                                         <i class="fas fa-trash text-white"></i>
                                         <p class="text-white">Eliminar</p>
                                     </button>

@@ -4,9 +4,18 @@
 <%@page import="com.espe.zonarbol.dao.ForestZoneDAO"%>
 <%@page import="com.espe.zonarbol.dao.ConservationActivityDAO"%>
 <%@page import="com.espe.zonarbol.dao.ConservationActivityDAO"%>
+<%@ page import="com.espe.zonarbol.utils.RoleCheck" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%
+    String username = (String) session.getAttribute("username");
+    Integer roleId = (Integer) session.getAttribute("roleId");
+    
+    if (username == null || roleId == null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+    
     ConservationActivityDAO activityDAO = new ConservationActivityDAO();
     ForestZoneDAO zoneDAO = new ForestZoneDAO();
     List<ConservationActivity> activities = activityDAO.getAllConservationActivities();
@@ -27,9 +36,10 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-green-700">Actividades de Conservación</h2>
                 <button onclick="document.getElementById('add-activity-modal').showModal()" 
-                        class="btn btn-success gap-2 text-white">
-                    <i class="fas fa-plus"></i>
-                    Nueva Actividad
+                        class="btn btn-success gap-2 text-white"
+                        <%= RoleCheck.evaluteAdd(roleId) ? "" : "disabled" %>>
+                    <i class="fas fa-plus text-white"></i>
+                    <p class="text-white">Nueva Actividad</p>
                 </button>
             </div>
 
@@ -105,12 +115,12 @@
                                 <td>
                                     <div class="flex space-x-2">
                                         <button onclick="event.stopPropagation(); openEditActivityModal(<%= activity.getActivityId() %>)" 
-                                                class="btn btn-sm btn-info">
+                                                class="btn btn-sm btn-info" <%= RoleCheck.evaluteEdit(roleId) ? "" : "disabled" %>>
                                             <i class="fas fa-edit text-white"></i>
                                             <p class="text-white">Editar</p>
                                         </button>
                                         <button onclick="event.stopPropagation(); confirmDeleteActivity(<%= activity.getActivityId() %>)" 
-                                                class="btn btn-sm btn-error ml-2">
+                                                class="btn btn-sm btn-error ml-2" <%= RoleCheck.evaluteDelete(roleId) ? "" : "disabled" %>>
                                             <i class="fas fa-trash text-white"></i>
                                             <p class="text-white">Eliminar</p>
                                         </button>

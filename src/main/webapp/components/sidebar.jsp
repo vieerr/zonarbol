@@ -4,17 +4,15 @@
 <%@page import="com.espe.zonarbol.model.Role"%>
 <%
     String username = (String) session.getAttribute("username");
+    Integer roleId = (Integer) session.getAttribute("roleId");
     
-    UserDAO userDAO = new UserDAO();
-    RoleDAO roleDAO = new RoleDAO();
-    
-    User currentUser = userDAO.getUserByName(username);
-    Role usrRole = roleDAO.getRoleById(currentUser.getUserId());
-    
-    if (username == null) {
+    if (username == null || roleId == null) {
         response.sendRedirect("index.jsp");
         return;
     }
+    
+    RoleDAO roleDAO = new RoleDAO();
+    Role usrRole = roleDAO.getRoleById(roleId);
 %>
 <!-- Sidebar -->
 <aside class="w-64 h-screen bg-white sticky top-0 text-nowrap shadow-lg flex flex-col hidden md:flex">

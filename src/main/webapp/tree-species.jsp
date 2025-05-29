@@ -2,11 +2,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.espe.zonarbol.model.TreeSpecies" %>
+<%@ page import="com.espe.zonarbol.utils.RoleCheck" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
 <%
     TreeSpeciesDAO speciesDAO = new TreeSpeciesDAO();
     List<TreeSpecies> speciesList = speciesDAO.getAllTreeSpecies();
+    Integer roleId = (Integer) session.getAttribute("roleId");
     
     // Get unique values for filters
     Set<String> families = new HashSet<>();
@@ -37,9 +39,10 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-green-700">Especies de Árboles</h2>
                 <button onclick="document.getElementById('add-species-modal').showModal()" 
-                        class="btn btn-success gap-2 text-white">
-                    <i class="fas fa-plus"></i>
-                    Nueva Especie
+                            class="btn btn-success gap-2 text-white"
+                            <%= RoleCheck.evaluteAdd(roleId) ? "" : "disabled" %>>
+                      <i class="fas fa-plus text-white"></i>
+                    <p class="text-white">Nueva Especie</p>
                 </button>
             </div>
 
@@ -111,12 +114,12 @@
                                 <td>
                                     <div class="flex space-x-2">
                                         <button onclick="openEditSpeciesModal(<%= species.getSpeciesId() %>)" 
-                                                class="btn btn-sm btn-info">
+                                                class="btn btn-sm btn-info" <%= RoleCheck.evaluteEdit(roleId) ? "" : "disabled" %>>
                                         <i class="fas fa-edit text-white"></i>
                                         <p class="text-white">Editar</p>
                                         </button>
                                         <button onclick="confirmDeleteSpecies(<%= species.getSpeciesId() %>)" 
-                                                class="btn btn-sm btn-error ml-2">
+                                                class="btn btn-sm btn-error ml-2" <%= RoleCheck.evaluteDelete(roleId) ? "" : "disabled" %>>
                                         <i class="fas fa-trash text-white"></i>
                                         <p class="text-white">Eliminar</p>
                                         </button>

@@ -1,5 +1,7 @@
 package com.espe.zonarbol.routes;
 
+import com.espe.zonarbol.dao.UserDAO;
+import com.espe.zonarbol.model.User;
 import com.espe.zonarbol.service.AuthService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,6 +16,7 @@ import java.io.IOException;
 public class AuthServerlet extends HttpServlet {
 
     private final AuthService authService = new AuthService();
+    private final UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -34,7 +37,10 @@ public class AuthServerlet extends HttpServlet {
             
             if (isAuthenticated) {
                 HttpSession session = request.getSession();
+                User usrSesion = userDAO.getUserByName(username);
+                
                 session.setAttribute("username", username);
+                session.setAttribute("roleId", usrSesion.getRoleId());
                 response.sendRedirect("menu.jsp");
             } else {
                 response.sendRedirect("index.jsp?error=1");
@@ -44,6 +50,7 @@ public class AuthServerlet extends HttpServlet {
         if("logout".equals(action)){
             HttpSession session = request.getSession();
             session.setAttribute("username", null);
+            session.setAttribute("roleId", null);
             response.sendRedirect("index.jsp");
         }
     }

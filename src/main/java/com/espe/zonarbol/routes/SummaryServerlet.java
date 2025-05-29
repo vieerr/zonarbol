@@ -58,7 +58,7 @@ public class SummaryServerlet extends HttpServlet {
         else if ("getZoneSpecies".equals(action)) {
             int zoneId = Integer.parseInt(request.getParameter("zoneId"));
             
-            response.setContentType("application/json");
+            response.setContentType("application/json; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             
             try (PrintWriter out = response.getWriter()) {
@@ -69,7 +69,7 @@ public class SummaryServerlet extends HttpServlet {
         else if("getZoneActivities".equals(action)) {
             int zoneId = Integer.parseInt(request.getParameter("zoneId"));
             
-            response.setContentType("application/json");
+            response.setContentType("application/json; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             
             try (PrintWriter out = response.getWriter()) {

@@ -1,3 +1,4 @@
+const roleId = parseInt(document.body.dataset.roleid);
 let currentZone = null;
 let currentSpecies = null;
 let currentActivities = null;
@@ -47,16 +48,19 @@ function updateZoneInfo(zone) {
 
 function loadGroupButtons() {
 	document.getElementById('zone-info-wrapper').innerHTML += `
-		<button onclick="openAddTreeModal()" class="text-white border-2 border-lime-500 rounded-xl w-full bg-lime-500 p-4 my-2">
-      <i class="fas fa-plus"></i>
-      Agregar árbol
+    <button onclick="openAddTreeModal()"
+            class="btn btn-lg btn-block bg-lime-500 border-2 border-lime-500 my-2"
+            ${roleId === 1 || roleId === 5 ? '' :'disabled'}>
+      <i class="fas fa-plus text-white"></i>
+      <p class="text-white">Agregar árbol</p>
     </button>
 	`;
 
-  // <button onclick="openAddActivityModal()" class="text-white border-2 border-green-600 rounded-xl w-full bg-green-600 p-4 my-2">
-  //      <i class="fas fa-plus"></i>
-  //      Agregar actividad
-  //   </button>
+// <button onclick="openAddActivityModal()"
+    //        class="btn btn-lg btn-block bg-green-600 border-2 border-green-600 my-2">
+     // <i class="fas fa-plus text-white"></i>
+     // <p class="text-white">Agregar actividad</p>
+    //</button>
 }
 
 async function getPopulationFromTree(specieId){
@@ -118,12 +122,14 @@ async function updateSpecieInfo(specie) {
       </div>
       <div class="flex space-x-2 justify-end">
         <button onclick="openEditTreeModal(${specie.speciesId})" 
-                class="btn btn-sm btn-info">
+                class="btn btn-sm btn-info" 
+                ${roleId === 1 || roleId === 3 ? '' :'disabled'}>
             <i class="fas fa-edit text-white"></i>
             <p class="text-white">Editar</p>
         </button>
         <button onclick="confirmRemoveTreeFromZone(${specie.speciesId})" 
-                class="btn btn-sm btn-error ml-2">
+                class="btn btn-sm btn-error ml-2"
+                ${roleId === 1 || roleId === 4 ? '' :'disabled'}>
             <i class="fas fa-trash text-white"></i>
             <p class="text-white">Quitar</p>
         </button>
@@ -342,7 +348,8 @@ function placeZoneSpecieDataInForm(data){
     
     document.getElementById('input-action').value = "update_specie";
     document.getElementById('input-zoneId').value = currentZone.zoneId;
-    document.getElementById('input-specieId').value = data.specieId; 
+    document.getElementById('input-specieId').value = data.specieId;
+    console.log(data)
     selectOption(document.getElementById('commonName'), data.commonName);
     
     document.getElementById('input-populationEstimate').value = data.populationEstimate;

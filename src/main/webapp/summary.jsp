@@ -5,7 +5,16 @@
 <%@ page import="com.espe.zonarbol.dao.ForestZoneDAO" %>
 <%@ page import="com.espe.zonarbol.dao.TreeSpeciesDAO" %>
 <%@ page import="com.espe.zonarbol.model.TreeSpecies" %>
+<%@ page import="com.espe.zonarbol.utils.RoleCheck" %>
 <%
+    String username = (String) session.getAttribute("username");
+    Integer roleId = (Integer) session.getAttribute("roleId");
+    
+    if (username == null || roleId == null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+    
     ForestZoneDAO zoneDAO = new ForestZoneDAO();
     List<ForestZone> zones = zoneDAO.getAllForestZones();
     
@@ -21,7 +30,7 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     </head>
-    <body class="min-h-screen bg-gray-50 flex">
+    <body class="min-h-screen bg-gray-50 flex" data-roleid="<%= roleId %>">
         <jsp:include page="components/sidebar.jsp" />
         <main class="grid grid-cols-[300px_3fr] gap-4 p-4 w-full">
             <aside class="bg-gray-200 p-4">

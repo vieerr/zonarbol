@@ -3,7 +3,6 @@ package com.espe.zonarbol.service;
 import com.espe.zonarbol.dao.TreeSpeciesDAO;
 import com.espe.zonarbol.model.TreeSpecies;
 import jakarta.servlet.http.HttpServletRequest;
-import java.sql.SQLException;
 import java.util.List;
 
 public class TreeSpeciesService {
