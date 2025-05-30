@@ -49,7 +49,7 @@ function updateZoneInfo(zone) {
 function loadGroupButtons() {
 	document.getElementById('zone-info-wrapper').innerHTML += `
     <button onclick="openAddTreeModal()"
-            class="btn btn-lg btn-block bg-lime-500 border-2 border-lime-500 my-2"
+            class="btn btn-lg btn-block bg-lime-500 border-2 border-lime-500 my-2 hover:bg-lime-600 hover:border-lime-600"
             ${roleId === 1 || roleId === 5 ? '' :'disabled'}>
       <i class="fas fa-plus text-white"></i>
       <p class="text-white">Agregar árbol</p>
@@ -80,61 +80,64 @@ async function updateSpecieInfo(specie) {
   const treePopulation = await getPopulationFromTree(specie.speciesId);
 
 	return `
-		<div class="my-4 border-2 border-lime-500 rounded-xl p-4">
-      <div class="rounded-sm text-center font-bold">
-          ${specie.commonName}
-      </div>
+    <div class="collapse collapse-arrow my-4 border-2 border-lime-500 rounded-xl p-1">
+    <input type="radio" name="zone-tree-accordion" />
+    <div class="collapse-title text-center font-bold">
+      ${specie.commonName}
+    </div>
+    <div class="collapse-content">
       <div class="grid grid-cols-[1fr_1fr] gap-4 w-full text-center">
-          <div>
-              <div class="m-2">
-                  <label class="text-black">
-                      <span class="font-semibold">Nombre Científico:</span>
-                      <span>${specie.scientificName}</span>
-                  </label>
-              </div>
-              <div class="m-2">
-                  <label class="text-black">
-                      <span class="font-semibold">Familia:</span>
-                      <span>${specie.family}</span>
-                  </label>
-              </div>
-              <div class="m-2">
-                  <label class="text-black">
-                      <span class="font-semibold">Vida Promedio:</span>
-                      <span>${specie.averageLifespan} años</span>
-                  </label>
-              </div>
+        <div>
+          <div class="m-2">
+            <label class="text-black">
+              <span class="font-semibold">Nombre Científico:</span>
+              <span>${specie.scientificName}</span>
+            </label>
           </div>
-          <div>
-              <div class="m-4">
-                  <label class="text-black">
-                      <span class="font-semibold">Estado de conservación:</span>
-                      <span>${specie.conservationStatus}</span>
-                  </label>
-              </div>
-              <div class="m-6"> 
-                  <label class="text-black">
-                      <span class="font-semibold">Población estimada:</span>
-                      <span>${treePopulation}</span>
-                  </label>
-              </div>
+          <div class="m-2">
+            <label class="text-black">
+              <span class="font-semibold">Familia:</span>
+              <span>${specie.family}</span>
+            </label>
           </div>
+          <div class="m-2">
+            <label class="text-black">
+              <span class="font-semibold">Vida Promedio:</span>
+              <span>${specie.averageLifespan} años</span>
+            </label>
+          </div>
+        </div>
+        <div>
+          <div class="m-4">
+            <label class="text-black">
+              <span class="font-semibold">Estado de conservación:</span>
+              <span>${specie.conservationStatus}</span>
+            </label>
+          </div>
+          <div class="m-6">
+            <label class="text-black">
+              <span class="font-semibold">Población estimada:</span>
+              <span>${treePopulation}</span>
+            </label>
+          </div>
+        </div>
       </div>
       <div class="flex space-x-2 justify-end">
         <button onclick="openEditTreeModal(${specie.speciesId})" 
                 class="btn btn-sm btn-info" 
                 ${roleId === 1 || roleId === 3 ? '' :'disabled'}>
-            <i class="fas fa-edit text-white"></i>
-            <p class="text-white">Editar</p>
+          <i class="fas fa-edit text-white"></i>
+          <p class="text-white">Editar</p>
         </button>
         <button onclick="confirmRemoveTreeFromZone(${specie.speciesId})" 
-                class="btn btn-sm btn-error ml-2"
-                ${roleId === 1 || roleId === 4 ? '' :'disabled'}>
-            <i class="fas fa-trash text-white"></i>
-            <p class="text-white">Quitar</p>
+            class="btn btn-sm btn-error ml-2"
+            ${roleId === 1 || roleId === 4 ? '' :'disabled'}>
+          <i class="fas fa-trash text-white"></i>
+          <p class="text-white">Quitar</p>
         </button>
       </div>
-		</div>	
+    </div>
+  </div>
 	`
 }
 
@@ -175,25 +178,27 @@ function updateActivityInfo(activity) {
 	}
 
 	return `
-		<div class="my-4 border-2 border-green-600 rounded-xl p-4">
-      <div class="rounded-sm text-center font-bold">
-          ${activity.activityType}
+    <div class="collapse collapse-arrow my-4 border-2 border-green-600 rounded-xl p-1">
+      <input type="radio" name="zone-activity-accordion" />
+      <div class="collapse-title text-center font-bold">
+        ${activity.activityType}
       </div>
-      <div class="grid grid-cols-[1fr_1fr] gap-4 w-full text-center">
-        <div>
-          <div class="m-4">
-            <label class="text-black">
-              <span class="font-semibold">Responsable:</span>
-              <span>${activity.responsibleEntity}</span>
-            </label>
+      <div class="collapse-content">
+        <div class="grid grid-cols-[1fr_1fr] gap-4 w-full text-center">
+          <div>
+            <div class="m-4">
+              <label class="text-black">
+                <span class="font-semibold">Responsable:</span>
+                <span>${activity.responsibleEntity}</span>
+              </label>
+            </div>
+            <div class="m-6">
+              <label class="text-black">
+                <span class="font-semibold">Fecha Inicio:</span>
+                <span>${activity.startDate}</span>
+              </label>
+            </div>
           </div>
-          <div class="m-6">
-            <label class="text-black">
-              <span class="font-semibold">Fecha Inicio:</span>
-              <span>${activity.startDate}</span>
-            </label>
-          </div>
-        </div>
         <div>
           <div class="m-4">
             <label class="text-black">
@@ -201,11 +206,11 @@ function updateActivityInfo(activity) {
               <span>$ ${activity.estimatedBudget}</span>
             </label>
           </div>
-          <div class="m-6"> 
-              <label class="text-black">
-                <span class="font-semibold">Fecha Fin:</span>
-                <span>${activity.endDate}</span>
-              </label>
+          <div class="m-6">
+            <label class="text-black">
+              <span class="font-semibold">Fecha Fin:</span>
+              <span>${activity.endDate}</span>
+            </label>
           </div>
         </div>
       </div>
@@ -216,6 +221,7 @@ function updateActivityInfo(activity) {
         <p class="text-black">${activity.description}</p>
       </div>
     </div>
+  </div>
 	`
 }
 
