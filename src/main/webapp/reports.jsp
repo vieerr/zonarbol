@@ -255,7 +255,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="bg-[#659378] text-lg text-center font-bold text-white">
+                            <tr>
                                 <% if ("zones".equals(reportType)) { %>
                                     <td>1</td>
                                     <td>Bosque Alto Talamanca</td>

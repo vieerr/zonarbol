@@ -111,7 +111,7 @@ async function updateSpecieInfo(specie) {
           <div class="m-4">
             <label class="text-black">
               <span class="font-semibold">Estado de conservación:</span>
-              <span>${specie.conservationStatus}</span>
+              <span>${getStatatusName(specie.conservationStatus)}</span>
             </label>
           </div>
           <div class="m-6">
@@ -401,5 +401,21 @@ function selectOption(selectInput, targetValue){
       options[i].selected = true;
       break;
     }
+  }
+}
+
+function getStatatusName(statusName){
+  if(statusName === null){
+    return "N/A";
+  }
+
+  switch (statusName) {
+    case "Critically Endangered": return "En Peligro Crítico";
+    case "Endangered": return "En Peligro";
+    case "Vulnerable": return "Vulnerable";
+    case "Near Threatened": return "Casi Amenazado";
+    case "Least Concern": return "Preocupación Menor";
+    case "Data Deficient": return "Datos Insuficientes";
+    default: return "N/A";
   }
 }
