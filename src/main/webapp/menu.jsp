@@ -49,12 +49,12 @@
             <button id="menu-toggle" class="text-gray-600">
                 <i class="fas fa-bars text-xl"></i>
             </button>
-            <h1 class="text-xl font-bold text-green-700">ZonArbol</h1>
+            <h2 class="text-2xl font-bold text-green-700">ZonArbol</h2>
             <div class="w-6"></div> <!-- Spacer for balance -->
         </div>
 
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl md:text-3xl font-bold text-green-700">Bienvenido, <%= username %></h2>
+            <h2 class="text-2xl md:text-2xl font-bold text-green-700">Bienvenido, <%= username %></h2>
             <div class="relative">
                 <input type="text" placeholder="Buscar..." class="input input-bordered w-full md:w-64 pl-10" />
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>

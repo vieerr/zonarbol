@@ -42,12 +42,12 @@
             <button id="menu-toggle" class="text-gray-600">
                 <i class="fas fa-bars text-xl"></i>
             </button>
-            <h1 class="text-xl font-bold text-green-700">Reportes</h1>
+            <h2 class="text-2xl font-bold text-green-700">Reportes</h2>
             <div class="w-6"></div>
         </div>
 
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl md:text-3xl font-bold text-green-700">Generar Reportes</h2>
+            <h2 class="text-2xl md:text-2xl font-bold text-green-700">Generar Reportes</h2>
         </div>
 
         <!-- Report Generation Form -->
