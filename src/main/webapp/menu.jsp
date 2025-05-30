@@ -130,7 +130,7 @@
             <!-- Recent Activities -->
             <div class="lg:col-span-2">
                 <div class="card bg-white shadow-md rounded-lg overflow-hidden">
-                    <div class="p-6 border-b border-gray-200">
+                    <div class="p-6 border-b border-gray-200 bg-[#81649b] font-bold text-white">
                         <h3 class="text-xl font-semibold">Actividades Recientes</h3>
                     </div>
                     <div class="p-6">
@@ -155,7 +155,7 @@
                             </div>
                             <% } %>
                         </div>
-                        <a href="conservation-activities.jsp" class="btn btn-ghost btn-sm mt-4 text-green-600">
+                        <a href="conservation-activities.jsp" class="btn btn-ghost btn-sm mt-4 text-[#684e80]">
                             Ver todas las actividades
                         </a>
                     </div>
@@ -165,7 +165,7 @@
             <!-- Quick Actions -->
             <div>
                 <div class="card bg-white shadow-md rounded-lg overflow-hidden">
-                    <div class="p-6 border-b border-gray-200">
+                    <div class="p-6 border-b border-gray-200 bg-[#659378] font-bold text-white">
                         <h3 class="text-xl font-semibold">Acciones Rápidas</h3>
                     </div>
                     <div class="p-6 space-y-3">

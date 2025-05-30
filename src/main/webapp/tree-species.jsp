@@ -74,7 +74,7 @@
                         <select id="filter-status" class="select select-bordered w-full" onchange="filterSpecies()">
                             <option value="">Todos</option>
                             <% for (String status : conservationStatuses) { %>
-                                <option value="<%= status %>"><%= status %></option>
+                                <option value="<%= status %>"><%= getConservationStatusName(status) %></option>
                             <% } %>
                         </select>
                     </div>
@@ -86,7 +86,7 @@
                 <div class="overflow-x-auto">
                     <table class="table">
                         <thead>
-                            <tr>
+                            <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                                 <th>Nombre Científico</th>
                                 <th>Nombre Común</th>
                                 <th>Familia</th>
@@ -106,13 +106,13 @@
                                 <td><%= species.getCommonName() != null ? species.getCommonName() : "N/A" %></td>
                                 <td><%= species.getFamily() != null ? species.getFamily() : "N/A" %></td>
                                 <td><%= species.getAverageLifespan() != null ? species.getAverageLifespan() + " años" : "N/A" %></td>
-                                <td>
-                                    <span class="badge <%= getConservationStatusBadge(species.getConservationStatus()) %>">
-                                        <%= species.getConservationStatus() != null ? species.getConservationStatus() : "N/A" %>
+                                <td class="flex justify-center">
+                                    <span class="inline-flex items-center py-[0.45em] px-[0.75em] text-xs font-semibold leading-none text-center whitespace-nowrap align-baseline rounded-[0.375rem] border <%= getConservationStatusBadge(species.getConservationStatus()) %>">
+                                        <%= getConservationStatusName(species.getConservationStatus()) %>
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="flex space-x-2">
+                                    <div class="flex space-x-2 justify-center">
                                         <button onclick="openEditSpeciesModal(<%= species.getSpeciesId() %>)" 
                                                 class="btn btn-sm btn-info" <%= RoleCheck.evaluteEdit(roleId) ? "" : "disabled" %>>
                                         <i class="fas fa-edit text-white"></i>
@@ -239,15 +239,28 @@
 
         <%!
             private String getConservationStatusBadge(String status) {
-                if (status == null) return "badge-ghost";
+                if (status == null) return "text-[#1d77cd] bg-[rgba(29,119,205,0.1)] border-[rgba(29,119,205,0.2)]";
                 switch (status) {
-                    case "Critically Endangered": return "badge-outline badge-secondary";
-                    case "Endangered": return "badge-outline badge-error";
-                    case "Vulnerable": return "badge-outline badge-warning";
-                    case "Near Threatened": return "badge-outline badge-info";
-                    case "Least Concern": return "badge-outline badge-success";
-                    case "Data Deficient": return "badge-outline badge-info";
-                    default: return "badge-ghost";
+                    case "Critically Endangered": return "border text-[#0f0f0f] bg-[rgba(15,15,15,0.1)] border-[rgba(15,15,15,0.2)]";
+                    case "Endangered": return "text-[#e63946] bg-[rgba(230,57,70,0.1)] border-[rgba(230,57,70,0.2)]";
+                    case "Vulnerable": return "text-[#e77313] bg-[rgba(231,115,19,0.1)] border-[rgba(231,115,19,0.2)]";
+                    case "Near Threatened": return "text-[#f1db1b] bg-[rgba(241,219,27,0.1)] border-[rgba(241,219,27,0.2)]";
+                    case "Least Concern": return "text-[#00b179] bg-[rgba(42,157,143,0.1)] border-[rgba(0,177,121,0.2)]";
+                    case "Data Deficient": return "border text-[#894217] bg-[rgba(137,66,23,0.1)] border-[rgba(137,66,23,0.2)]";
+                    default: return "text-[#1d77cd] bg-[rgba(29,119,205,0.1)] border-[rgba(29,119,205,0.2)]";
+                }
+            }
+
+            private String getConservationStatusName(String status) {
+                if (status == null) return "N/A";
+                switch (status) {
+                    case "Critically Endangered": return "En Peligro Crítico";
+                    case "Endangered": return "En Peligro";
+                    case "Vulnerable": return "Vulnerable";
+                    case "Near Threatened": return "Casi Amenazado";
+                    case "Least Concern": return "Preocupación Menor";
+                    case "Data Deficient": return "Datos Insuficientes";
+                    default: return "N/A";
                 }
             }
         %>

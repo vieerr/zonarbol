@@ -81,7 +81,7 @@
             <div class="overflow-x-auto">
                 <table class="table">
                     <thead>
-                        <tr class="text-center">
+                        <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                             <th>Nombre</th>
                             <th>Ubicación</th>
                             <th>Área (ha)</th>
@@ -100,7 +100,7 @@
                             <td><%= String.format("%,.2f", zone.getTotalAreaHectares()) %></td>
                             <td><%= zone.getForestType() %></td>
                             <td>
-                                <div class="flex space-x-2">
+                                <div class="flex space-x-2 justify-center">
                                     <button onclick="openEditModal(<%= zone.getZoneId() %>)" 
                                             class="btn btn-sm btn-info" <%= RoleCheck.evaluteEdit(roleId) ? "" : "disabled" %>>
                                         <i class="fas fa-edit text-white"></i>

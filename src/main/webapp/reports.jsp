@@ -231,7 +231,7 @@
                 <div class="overflow-x-auto">
                     <table class="table table-zebra w-full">
                         <thead>
-                            <tr>
+                            <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                                 <% if ("zones".equals(reportType)) { %>
                                     <th>ID</th>
                                     <th>Nombre</th>
@@ -255,7 +255,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                                 <% if ("zones".equals(reportType)) { %>
                                     <td>1</td>
                                     <td>Bosque Alto Talamanca</td>
@@ -291,10 +291,10 @@
         <div class="bg-white p-6 rounded-lg shadow">
             <h3 class="text-xl font-semibold mb-4">Reportes Guardados</h3>
             
-            <div class="overflow-x-auto">
+            <div class="bg-white rounded-lg overflow-x-auto">
                 <table class="table w-full">
                     <thead>
-                        <tr>
+                        <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                             <th>Nombre</th>
                             <th>Tipo</th>
                             <th>Formato</th>

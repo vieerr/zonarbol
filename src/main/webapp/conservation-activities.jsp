@@ -79,7 +79,7 @@
                 <div class="overflow-x-auto">
                     <table class="table">
                         <thead>
-                            <tr>
+                            <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                                 <th>Zona Forestal</th>
                                 <th>Tipo de Actividad</th>
                                 <th>Fechas</th>
@@ -93,7 +93,7 @@
                             <tr onclick="viewActivityDetails(
                                             '<%= activity.getActivityType().replace("'", "\\'") %>',
                                             '<%= activity.getDescription().replace("'", "\\'") %>'
-                                            )" style="cursor: pointer;">
+                                            )" style="cursor: pointer;" class="hover:bg-[#F4FAF7]">
                                 <td><%= zoneDAO.getForestZoneById(activity.getZoneId()).getZoneName() %></td>
                                 <td><%= activity.getActivityType() %></td>
                                 <td>
@@ -107,13 +107,13 @@
                                 <td><%= activity.getResponsibleEntity() %></td>
                                 <td>
                                     <% if (activity.getEstimatedBudget() != null) { %>
-                                    ₡<%= String.format("%,.2f", activity.getEstimatedBudget()) %>
+                                    $<%= String.format("%,.2f", activity.getEstimatedBudget()) %>
                                     <% } else { %>
                                     N/A
                                     <% } %>
                                 </td>
                                 <td>
-                                    <div class="flex space-x-2">
+                                    <div class="flex space-x-2 justify-center">
                                         <button onclick="event.stopPropagation(); openEditActivityModal(<%= activity.getActivityId() %>)" 
                                                 class="btn btn-sm btn-info" <%= RoleCheck.evaluteEdit(roleId) ? "" : "disabled" %>>
                                             <i class="fas fa-edit text-white"></i>
