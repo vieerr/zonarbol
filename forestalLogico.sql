@@ -155,7 +155,14 @@ VALUES
 INSERT INTO roles (role_id, role_name) VALUES
 (1, 'Administrador'),
 (2, 'Observador');
+(3, 'Editor');
+(4, 'Depurador');
+(5, 'Grabador');
+
 
 INSERT INTO users (user_id, user_name, user_password, role_id) VALUES
 (1, 'admin', 'nnEor72DtqzSXIrvqLqnIg==', 1),
-(2, 'guest', 'BmQdkniS9/KFj8FHon79oA==', 2);
+(2, 'observador', 'BmQdkniS9/KFj8FHon79oA==', 2);
+(3, 'editor', 'BmQdkniS9/KFj8FHon79oA==', 3);
+(4, 'depurador', 'BmQdkniS9/KFj8FHon79oA==', 4);
+(5, 'grabador', 'BmQdkniS9/KFj8FHon79oA==', 5);
