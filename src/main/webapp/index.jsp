@@ -39,7 +39,6 @@
             %>
         </form>
     </div>
-        
-    <script src="scripts/login_script.js"></<script>
+    <script src="scripts/login_script.js"></script>    
 </body>
 </html>

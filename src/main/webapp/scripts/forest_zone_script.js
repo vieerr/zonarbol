@@ -90,7 +90,6 @@ async function openEditModal(zoneId) {
     try {
         const response = await fetch(urlString);
         const data = await response.json();
-        console.log(data);
         placeDataInForm(data);
         formModal.show();
     } catch (error) {
@@ -147,7 +146,76 @@ function confirmDelete(zoneId) {
   document.body.appendChild(form);
   form.submit();
 }
-        
+
+// Form validation
+const formContainer = document.getElementById('frm-send');
+
+formContainer.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const errorMsg = validateInputs();
+
+    if(errorMsg !== ''){
+      showErrorMsg(errorMsg);
+      return;
+    }
+    
+    this.submit();
+  });
+
+function validateInputs(){
+  const patronSQL = /('|--|;|\b(SELECT|UPDATE|DELETE|INSERT|DROP|UNION|ALTER|CREATE|EXEC)\b)/i;
+
+  const zoneNameInput = document.getElementById('input-zoneName').value;
+  if(zoneNameInput.trim() === '')
+    return "No pueden haber espacios en blanco en el nombre de la zona.";
+
+  if (patronSQL.test(zoneNameInput))
+    return "Entrada de texto sospechaosa.";
+  
+  const forestTypeInput = document.getElementById('input-forestType').value;
+  if(forestTypeInput.trim() === '')
+    return "No pueden haber espacios en blanco en el tipo de bosque.";
+
+  if (patronSQL.test(forestTypeInput))
+    return "Entrada de texto sospechaosa.";
+
+  if(document.getElementById('province').value === ' ')
+    return "Debe seleccionar una provincia de la lista.";
+
+  if(document.getElementById('canton').value === ' ')
+    return "Debe seleccionar un cantón de la lista.";
+
+  if(Number(document.getElementById('input-totalAreaHectares').value) <= 0)
+    return "No puede colocar valores negativos en la hectareas.";
+
+  return "";
+}
+
+function showErrorMsg(errorMsg){
+  const msgAlert = `
+      <svg class="w-5 h-5 mr-3 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+      <div class="flex-grow text-[0.95rem]">
+        <p><strong class="font-semibold">¡Error!</strong> ${errorMsg}</p>
+      </div>
+  `;
+
+  const errorDiv = document.createElement('div');
+  errorDiv.id = "err-msg";
+  errorDiv.className = "flex items-start p-4 rounded-md mb-6 relative bg-[rgba(230,57,70,0.1)] border-l-4 border-[#e63946] text-[#e63946]";
+  errorDiv.innerHTML = msgAlert;
+
+  const inputWrapper = document.getElementById('frm-input-wrapper');
+  inputWrapper.appendChild(errorDiv);
+
+  setTimeout(() => {
+    inputWrapper.removeChild(errorDiv);
+  }, 3000);
+
+}
+
 // Filter functionality
 function filterZones() {
   const provinceFilter = document.getElementById('filter-province').value.toLowerCase();
