@@ -49,12 +49,12 @@
             <button id="menu-toggle" class="text-gray-600">
                 <i class="fas fa-bars text-xl"></i>
             </button>
-            <h1 class="text-xl font-bold text-green-700">ZonArbol</h1>
+            <h2 class="text-2xl font-bold text-green-700">ZonArbol</h2>
             <div class="w-6"></div> <!-- Spacer for balance -->
         </div>
 
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl md:text-3xl font-bold text-green-700">Bienvenido, <%= username %></h2>
+            <h2 class="text-2xl md:text-2xl font-bold text-green-700">Bienvenido, <%= username %></h2>
             <div class="relative">
                 <input type="text" placeholder="Buscar..." class="input input-bordered w-full md:w-64 pl-10" />
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
@@ -130,7 +130,7 @@
             <!-- Recent Activities -->
             <div class="lg:col-span-2">
                 <div class="card bg-white shadow-md rounded-lg overflow-hidden">
-                    <div class="p-6 border-b border-gray-200">
+                    <div class="p-6 border-b border-gray-200 bg-[#81649b] font-bold text-white">
                         <h3 class="text-xl font-semibold">Actividades Recientes</h3>
                     </div>
                     <div class="p-6">
@@ -155,7 +155,7 @@
                             </div>
                             <% } %>
                         </div>
-                        <a href="conservation-activities.jsp" class="btn btn-ghost btn-sm mt-4 text-green-600">
+                        <a href="conservation-activities.jsp" class="btn btn-ghost btn-sm mt-4 text-[#684e80]">
                             Ver todas las actividades
                         </a>
                     </div>
@@ -165,7 +165,7 @@
             <!-- Quick Actions -->
             <div>
                 <div class="card bg-white shadow-md rounded-lg overflow-hidden">
-                    <div class="p-6 border-b border-gray-200">
+                    <div class="p-6 border-b border-gray-200 bg-[#659378] font-bold text-white">
                         <h3 class="text-xl font-semibold">Acciones Rápidas</h3>
                     </div>
                     <div class="p-6 space-y-3">
@@ -195,38 +195,7 @@
     <!-- Mobile sidebar overlay -->
     <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
 
-    <script>
-        // Toggle mobile sidebar
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-            const sidebar = document.querySelector('aside');
-            const overlay = document.getElementById('mobile-sidebar-overlay');
-            
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('absolute');
-            sidebar.classList.toggle('z-50');
-            sidebar.classList.toggle('h-full');
-            overlay.classList.toggle('hidden');
-        });
-
-        // Close sidebar when clicking overlay
-        document.getElementById('mobile-sidebar-overlay').addEventListener('click', function() {
-            const sidebar = document.querySelector('aside');
-            const overlay = document.getElementById('mobile-sidebar-overlay');
-            
-            sidebar.classList.add('hidden');
-            overlay.classList.add('hidden');
-        });
-
-        // Search functionality
-        document.querySelector('input[type="text"]').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const query = this.value.trim();
-                if (query) {
-                    window.location.href = 'search.jsp?query=' + encodeURIComponent(query);
-                }
-            }
-        });
-    </script>
+    <script src="scripts/menu_script.js"></script>
 </body>
 </html>
 

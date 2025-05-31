@@ -175,6 +175,7 @@ public class ConservationActivityDAO {
         activity.setEstimatedBudget(rs.getDouble("estimated_budget"));
         if (rs.wasNull()) {
             activity.setEstimatedBudget(null);
+            activity.setEndDate(null);
         }
         activity.setCreatedAt(rs.getTimestamp("created_at"));
         activity.setState(rs.getString("state"));

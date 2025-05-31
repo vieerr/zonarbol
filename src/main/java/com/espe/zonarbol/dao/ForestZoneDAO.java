@@ -68,7 +68,7 @@ public class ForestZoneDAO {
     }
 
     public int getForestZonesCount() {
-        String sql = "SELECT COUNT(*) FROM forest_zones";
+        String sql = "SELECT COUNT(*) FROM forest_zones WHERE state='ACTIVE' ";
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
@@ -81,7 +81,7 @@ public class ForestZoneDAO {
 
     public int getForestZonesAddedThisMonth() {
         String sql = "SELECT COUNT(*) FROM forest_zones WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) "
-                + "AND YEAR(created_at) = YEAR(CURRENT_DATE())";
+                + "AND YEAR(created_at) = YEAR(CURRENT_DATE()) AND state='ACTIVE'";
         try (PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);

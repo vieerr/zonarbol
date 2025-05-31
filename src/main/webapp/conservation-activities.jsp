@@ -4,9 +4,18 @@
 <%@page import="com.espe.zonarbol.dao.ForestZoneDAO"%>
 <%@page import="com.espe.zonarbol.dao.ConservationActivityDAO"%>
 <%@page import="com.espe.zonarbol.dao.ConservationActivityDAO"%>
+<%@ page import="com.espe.zonarbol.utils.RoleCheck" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%
+    String username = (String) session.getAttribute("username");
+    Integer roleId = (Integer) session.getAttribute("roleId");
+    
+    if (username == null || roleId == null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+    
     ConservationActivityDAO activityDAO = new ConservationActivityDAO();
     ForestZoneDAO zoneDAO = new ForestZoneDAO();
     List<ConservationActivity> activities = activityDAO.getAllConservationActivities();
@@ -26,10 +35,11 @@
         <main class="flex-grow p-4 md:p-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-green-700">Actividades de Conservación</h2>
-                <button onclick="document.getElementById('add-activity-modal').showModal()" 
-                        class="btn btn-success gap-2">
-                    <i class="fas fa-plus"></i>
-                    Nueva Actividad
+                <button onclick="openAddModal()" 
+                        class="btn btn-success gap-2 text-white"
+                        <%= RoleCheck.evaluteAdd(roleId) ? "" : "disabled" %>>
+                    <i class="fas fa-plus text-white"></i>
+                    <p class="text-white">Nueva Actividad</p>
                 </button>
             </div>
 
@@ -38,28 +48,24 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label class="label">Zona Forestal</label>
-                        <select class="select select-bordered w-full">
-                            <option>Todas</option>
+                        <select id="filter-zone" class="select select-bordered w-full" onchange="filterActivities()">
+                            <option value="">Todas</option>
                             <% for (ForestZone zone : zoneDAO.getAllForestZones()) { %>
-                            <option value="<%= zone.getZoneId() %>"><%= zone.getZoneName() %></option>
+                            <option value="<%= zone.getZoneName() %>"><%= zone.getZoneName() %></option>
                             <% } %>
                         </select>
                     </div>
                     <div>
                         <label class="label">Tipo de Actividad</label>
-                        <input type="text" placeholder="Filtrar por tipo..." class="input input-bordered w-full">
+                        <input id="filter-activityType" type="text" placeholder="Filtrar por tipo..." class="input input-bordered w-full" onchange="filterActivities()">
+                    </div>
+                    <div>
+                        <label class="label">Entidad Responsable</label>
+                        <input id="filter-responsableEntity" type="text" placeholder="Filtrar por nombre..." class="input input-bordered w-full" onchange="filterActivities()">
                     </div>
                     <div>
                         <label class="label">Fecha Inicio</label>
-                        <input type="date" class="input input-bordered w-full">
-                    </div>
-                    <div>
-                        <label class="label">Estado</label>
-                        <select class="select select-bordered w-full">
-                            <option>Todos</option>
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                        </select>
+                        <input id="filter-startDate" type="date" class="input input-bordered w-full" onchange="filterActivities()">
                     </div>
                 </div>
             </div>
@@ -69,7 +75,7 @@
                 <div class="overflow-x-auto">
                     <table class="table">
                         <thead>
-                            <tr>
+                            <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                                 <th>Zona Forestal</th>
                                 <th>Tipo de Actividad</th>
                                 <th>Fechas</th>
@@ -80,10 +86,16 @@
                         </thead>
                         <tbody>
                             <% for (ConservationActivity activity : activities) { %>
-                            <tr onclick="viewActivityDetails(
+                            <tr class="hover:bg-[#F4FAF7] activities-row"
+                                onclick="viewActivityDetails(
                                             '<%= activity.getActivityType().replace("'", "\\'") %>',
                                             '<%= activity.getDescription().replace("'", "\\'") %>'
-                                            )" style="cursor: pointer;">
+                                            )" style="cursor: pointer;" 
+                                data-zone="<%= zoneDAO.getForestZoneById(activity.getZoneId()).getZoneName().toLowerCase() %>"
+                                data-activity-type="<%= activity.getActivityType() != null ? activity.getActivityType().toLowerCase() : "" %>"
+                                data-responsable-entity="<%= activity.getResponsibleEntity() != null ? activity.getResponsibleEntity().toLowerCase() : "" %>"
+                                data-start-date="<%= activity.getStartDate() != null ? activity.getStartDate() : "" %>">
+                                
                                 <td><%= zoneDAO.getForestZoneById(activity.getZoneId()).getZoneName() %></td>
                                 <td><%= activity.getActivityType() %></td>
                                 <td>
@@ -97,20 +109,20 @@
                                 <td><%= activity.getResponsibleEntity() %></td>
                                 <td>
                                     <% if (activity.getEstimatedBudget() != null) { %>
-                                    ₡<%= String.format("%,.2f", activity.getEstimatedBudget()) %>
+                                    $<%= String.format("%,.2f", activity.getEstimatedBudget()) %>
                                     <% } else { %>
                                     N/A
                                     <% } %>
                                 </td>
                                 <td>
-                                    <div class="flex space-x-2">
-                                        <button onclick="event.stopPropagation(); openEditActivityModal(<%= activity.getActivityId() %>)" 
-                                                class="btn btn-sm btn-info">
+                                    <div class="flex space-x-2 justify-center">
+                                        <button onclick="event.stopPropagation(); openEditModal(<%= activity.getActivityId() %>)" 
+                                                class="btn btn-sm btn-info" <%= RoleCheck.evaluteEdit(roleId) ? "" : "disabled" %>>
                                             <i class="fas fa-edit text-white"></i>
                                             <p class="text-white">Editar</p>
                                         </button>
-                                        <button onclick="event.stopPropagation(); confirmDeleteActivity(<%= activity.getActivityId() %>)" 
-                                                class="btn btn-sm btn-error ml-2">
+                                        <button onclick="event.stopPropagation(); confirmDelete(<%= activity.getActivityId() %>)" 
+                                                class="btn btn-sm btn-error ml-2" <%= RoleCheck.evaluteDelete(roleId) ? "" : "disabled" %>>
                                             <i class="fas fa-trash text-white"></i>
                                             <p class="text-white">Eliminar</p>
                                         </button>
@@ -126,17 +138,18 @@
         </main>
 
         <!-- Add Activity Modal -->
-        <dialog id="add-activity-modal" class="modal">
+        <dialog id="base-modal-form" class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
-                <h3 class="font-bold text-lg">Registrar Nueva Actividad de Conservación</h3>
-                <form action="ConservationActivityServlet" method="POST" class="mt-4">
-                    <input type="hidden" name="action" value="add">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h3 id="form-title" class="font-bold text-lg">Title</h3>
+                <form action="ConservationActivityServlet" method="POST" class="mt-4" id="frm-send">
+                    <input id="input-action" type="hidden" name="action" value="add">
+                    <input id="input-activityId" type="hidden" name="activityId" value="0">
+                    <div id="frm-input-wrapper" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="label">
                                 <span class="label-text">Zona Forestal*</span>
                             </label>
-                            <select name="zoneId" class="select select-bordered w-full" required>
+                            <select id="select-zoneId" name="zoneId" class="select select-bordered w-full" required>
                                 <option value="">Seleccione una zona...</option>
                                 <% for (ForestZone zone : zoneDAO.getAllForestZones()) { %>
                                 <option value="<%= zone.getZoneId() %>"><%= zone.getZoneName() %></option>
@@ -147,101 +160,55 @@
                             <label class="label">
                                 <span class="label-text">Tipo de Actividad*</span>
                             </label>
-                            <input type="text" name="activityType" placeholder="Ej: Reforestación" 
+                            <input id="input-activityType" type="text" name="activityType" placeholder="Ej: Reforestación" 
                                    class="input input-bordered w-full" required>
                         </div>
                         <div>
                             <label class="label">
                                 <span class="label-text">Fecha Inicio*</span>
                             </label>
-                            <input type="date" name="startDate" class="input input-bordered w-full" required>
+                            <input id="input-startDate" type="date" name="startDate" class="input input-bordered w-full" required>
                         </div>
                         <div>
                             <label class="label">
                                 <span class="label-text">Fecha Finalización</span>
+                                <span class="label-text">
+                                    Marcar en curso
+                                    <input id="check-is-in-course" type="checkbox" class="checkbox checkbox-sm checkbox-success" />
+                                </span>
                             </label>
-                            <input type="date" name="endDate" class="input input-bordered w-full">
+                            <input id="input-endDate" type="date" name="endDate" class="input input-bordered w-full">
                         </div>
                         <div>
                             <label class="label">
                                 <span class="label-text">Entidad Responsable</span>
                             </label>
-                            <input type="text" name="responsibleEntity" placeholder="Ej: MINAE" 
+                            <input id="input-responsibleEntity" type="text" name="responsibleEntity" placeholder="Ej: MINAE" 
                                    class="input input-bordered w-full">
                         </div>
                         <div>
                             <label class="label">
-                                <span class="label-text">Presupuesto Estimado (₡)</span>
+                                <span class="label-text">Presupuesto Estimado ($)</span>
                             </label>
-                            <input type="number" step="0.01" min="0" name="estimatedBudget" 
+                            <input id="input-estimatedBudget" type="number" step="0.01" min="0" name="estimatedBudget" 
                                    placeholder="Ej: 150000.00" class="input input-bordered w-full">
                         </div>
                         <div class="md:col-span-2">
                             <label class="label">
                                 <span class="label-text">Descripción*</span>
                             </label>
-                            <textarea name="description" class="textarea textarea-bordered w-full" 
+                            <textarea id="input-description" name="description" class="textarea textarea-bordered w-full" 
                                       rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-action">
-                        <button type="button" onclick="document.getElementById('add-activity-modal').close()" 
+                        <button type="button" onclick="document.getElementById('base-modal-form').close()" 
                                 class="btn btn-ghost">Cancelar</button>
                         <button type="submit" class="btn btn-success">Guardar</button>
                     </div>
                 </form>
             </div>
         </dialog>
-        <!-- Edit Activity Modal -->
-        <dialog id="edit-activity-modal" class="modal">
-            <div class="modal-box w-11/12 max-w-5xl">
-                <h3 class="font-bold text-lg">Editar Actividad de Conservación</h3>
-                <form id="edit-activity-form" method="POST" action="ConservationActivityServlet">
-                    <input type="hidden" name="action" value="update">
-                    <input type="hidden" name="activityId" id="editActivityId">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="label"><span class="label-text">Zona Forestal*</span></label>
-                            <select name="zoneId" id="editZoneId" class="select select-bordered w-full" required>
-                                <option value="">Seleccione una zona...</option>
-                                <% for (ForestZone zone : zoneDAO.getAllForestZones()) { %>
-                                <option value="<%= zone.getZoneId() %>"><%= zone.getZoneName() %></option>
-                                <% } %>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="label"><span class="label-text">Tipo de Actividad*</span></label>
-                            <input type="text" name="activityType" id="editActivityType" class="input input-bordered w-full" required>
-                        </div>
-                        <div>
-                            <label class="label"><span class="label-text">Fecha Inicio*</span></label>
-                            <input type="date" name="startDate" id="editStartDate" class="input input-bordered w-full" required>
-                        </div>
-                        <div>
-                            <label class="label"><span class="label-text">Fecha Finalización</span></label>
-                            <input type="date" name="endDate" id="editEndDate" class="input input-bordered w-full">
-                        </div>
-                        <div>
-                            <label class="label"><span class="label-text">Entidad Responsable</span></label>
-                            <input type="text" name="responsibleEntity" id="editResponsibleEntity" class="input input-bordered w-full">
-                        </div>
-                        <div>
-                            <label class="label"><span class="label-text">Presupuesto Estimado (₡)</span></label>
-                            <input type="number" step="0.01" min="0" name="estimatedBudget" id="editEstimatedBudget" class="input input-bordered w-full">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="label"><span class="label-text">Descripción*</span></label>
-                            <textarea name="description" id="editDescription" class="textarea textarea-bordered w-full" rows="3" required></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-action">
-                        <button type="button" onclick="document.getElementById('edit-activity-modal').close()" class="btn btn-ghost">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
-                    </div>
-                </form>
-            </div>
-        </dialog>
-
 
         <!-- Detail Activity Modal -->
         <dialog id="detail-activity-modal" class="modal">
@@ -282,68 +249,9 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="modal-action mt-6">
-                    <button onclick="document.getElementById('detail-activity-modal').close()" 
-                            class="btn btn-ghost hover:bg-gray-100">
-                        Cerrar Ventana
-                    </button>
-                </div>
             </div>
         </dialog>
 
-        <script>
-            function viewActivityDetails(type, description) {
-                document.getElementById('detailType').innerText = type;
-                document.getElementById('detailDescription').innerText = description || '—';
-                document.getElementById('detail-activity-modal').showModal();
-            }
-            async function openEditActivityModal(activityId) {
-                try {
-                    const url = `/zonarbol/ConservationActivityServlet?action=search&id=` + activityId;
-
-                    const response = await fetch(url);
-                    const text = await response.text();
-
-                    if (!text)
-                        throw new Error("Respuesta vacía");
-                    const data = JSON.parse(text);
-                    document.getElementById('editActivityId').value = data.activityId;
-                    document.getElementById('editZoneId').value = data.zoneId;
-                    document.getElementById('editActivityType').value = data.activityType;
-                    document.getElementById('editStartDate').value = data.startDate.split(' ')[0];
-                    document.getElementById('editEndDate').value = data.endDate ? data.endDate.split(' ')[0] : '';
-                    document.getElementById('editResponsibleEntity').value = data.responsibleEntity;
-                    document.getElementById('editEstimatedBudget').value = data.estimatedBudget;
-                    document.getElementById('editDescription').value = data.description;
-
-                    document.getElementById('edit-activity-modal').showModal();
-                } catch (err) {
-                    alert("Error al cargar los datos");
-                    console.error(err);
-                }
-            }
-            function confirmDeleteActivity(activityId) {
-                if (!confirm("¿Está seguro que desea eliminar esta actividad de conservación?"))
-                    return;
-                const form = document.createElement("form");
-                form.method = "POST";
-                form.action = "ConservationActivityServlet";
-
-                const inputAction = document.createElement("input");
-                inputAction.type = "hidden";
-                inputAction.name = "action";
-                inputAction.value = "delete";
-                form.appendChild(inputAction);
-
-                const inputId = document.createElement("input");
-                inputId.type = "hidden";
-                inputId.name = "activityId";
-                inputId.value = activityId;
-                form.appendChild(inputId);
-                document.body.appendChild(form);
-                form.submit();
-            }
-        </script>
+        <script src="scripts/conservation_activities_script.js"></script>
     </body>
 </html>

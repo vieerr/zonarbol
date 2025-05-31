@@ -42,12 +42,12 @@
             <button id="menu-toggle" class="text-gray-600">
                 <i class="fas fa-bars text-xl"></i>
             </button>
-            <h1 class="text-xl font-bold text-green-700">Reportes</h1>
+            <h2 class="text-2xl font-bold text-green-700">Reportes</h2>
             <div class="w-6"></div>
         </div>
 
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl md:text-3xl font-bold text-green-700">Generar Reportes</h2>
+            <h2 class="text-2xl md:text-2xl font-bold text-green-700">Generar Reportes</h2>
         </div>
 
         <!-- Report Generation Form -->
@@ -198,8 +198,8 @@
                 </div>
                 
                 <div class="mt-6 flex justify-end space-x-3">
-                    <button type="reset" class="btn btn-ghost">Limpiar</button>
-                    <button type="submit" class="btn btn-success">Generar Reporte</button>
+                    <button type="reset" class="btn btn-outline">Limpiar</button>
+                    <button type="submit" class="btn btn-success text-white">Generar Reporte</button>
                 </div>
             </form>
         </div>
@@ -207,21 +207,21 @@
         <% if (reportGenerated) { %>
         <!-- Report Generated Successfully -->
         <div class="bg-white p-6 rounded-lg shadow mb-6">
-            <div class="alert alert-success">
+            <div class="alert alert-success alert-soft">
                 <div class="flex-1">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                         class="w-6 h-6 mx-2 stroke-current">
+                         class="w-6 h-6 mx-2 stroke-current text-white">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <label>Reporte generado exitosamente. Listo para descargar.</label>
+                    <label class="text-white">Reporte generado exitosamente. Listo para descargar.</label>
                 </div>
             </div>
             
             <div class="mt-4 flex justify-center">
-                <a href="<%= downloadLink %>" class="btn btn-primary gap-2">
-                    <i class="fas fa-download"></i>
-                    Descargar Reporte
+                <a href="<%= downloadLink %>" class="btn btn-accent gap-2">
+                    <i class="fas fa-download text-white"></i>
+                    <p class="text-white">Descargar Reporte</p>
                 </a>
             </div>
             
@@ -231,7 +231,7 @@
                 <div class="overflow-x-auto">
                     <table class="table table-zebra w-full">
                         <thead>
-                            <tr>
+                            <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                                 <% if ("zones".equals(reportType)) { %>
                                     <th>ID</th>
                                     <th>Nombre</th>
@@ -291,10 +291,10 @@
         <div class="bg-white p-6 rounded-lg shadow">
             <h3 class="text-xl font-semibold mb-4">Reportes Guardados</h3>
             
-            <div class="overflow-x-auto">
+            <div class="bg-white rounded-lg overflow-x-auto">
                 <table class="table w-full">
                     <thead>
-                        <tr>
+                        <tr class="bg-[#659378] text-lg text-center font-bold text-white">
                             <th>Nombre</th>
                             <th>Tipo</th>
                             <th>Formato</th>
@@ -310,8 +310,14 @@
                             <td>2024-05-15</td>
                             <td>
                                 <div class="flex space-x-2">
-                                    <button class="btn btn-xs btn-primary">Descargar</button>
-                                    <button class="btn btn-xs btn-error">Eliminar</button>
+                                    <button class="btn btn-sm btn-accent">
+                                        <i class="fa-solid fa-download text-white"></i>
+                                        <p class="text-white">Descargar</p>
+                                    </button>
+                                    <button class="btn btn-sm btn-error ml-2">
+                                        <i class="fas fa-trash text-white"></i>
+                                        <p class="text-white">Eliminar</p>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -322,8 +328,14 @@
                             <td>2024-04-28</td>
                             <td>
                                 <div class="flex space-x-2">
-                                    <button class="btn btn-xs btn-primary">Descargar</button>
-                                    <button class="btn btn-xs btn-error">Eliminar</button>
+                                    <button class="btn btn-sm btn-accent">
+                                        <i class="fa-solid fa-download text-white"></i>
+                                        <p class="text-white">Descargar</p>
+                                    </button>
+                                    <button class="btn btn-sm btn-error ml-2">
+                                        <i class="fas fa-trash text-white"></i>
+                                        <p class="text-white">Eliminar</p>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -333,54 +345,6 @@
         </div>
     </main>
 
-    <script>
-        // Toggle mobile sidebar
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-            const sidebar = document.querySelector('aside');
-            const overlay = document.getElementById('mobile-sidebar-overlay');
-            
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('absolute');
-            sidebar.classList.toggle('z-50');
-            sidebar.classList.toggle('h-full');
-            overlay.classList.toggle('hidden');
-        });
-
-        // Close sidebar when clicking overlay
-        document.getElementById('mobile-sidebar-overlay').addEventListener('click', function() {
-            const sidebar = document.querySelector('aside');
-            const overlay = document.getElementById('mobile-sidebar-overlay');
-            
-            sidebar.classList.add('hidden');
-            overlay.classList.add('hidden');
-        });
-
-        // Show/hide additional filters based on report type
-        document.querySelector('select[name="reportType"]').addEventListener('change', function() {
-            const additionalFilters = document.getElementById('additionalFilters');
-            const reportType = this.value;
-            
-            // Hide all filters first
-            document.querySelectorAll('.report-filters').forEach(el => {
-                el.classList.add('hidden');
-            });
-            
-            if (reportType) {
-                additionalFilters.classList.remove('hidden');
-                document.getElementById(reportType + 'Filters').classList.remove('hidden');
-            } else {
-                additionalFilters.classList.add('hidden');
-            }
-        });
-
-        // Initialize filters if returning to page with report type selected
-        document.addEventListener('DOMContentLoaded', function() {
-            const reportType = document.querySelector('select[name="reportType"]').value;
-            if (reportType) {
-                document.getElementById('additionalFilters').classList.remove('hidden');
-                document.getElementById(reportType + 'Filters').classList.remove('hidden');
-            }
-        });
-    </script>
+        <script src="scripts/reports_script.js"></script>
 </body>
 </html>
