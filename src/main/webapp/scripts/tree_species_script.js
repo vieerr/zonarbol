@@ -107,10 +107,10 @@ function validateInputs(){
     return "Entrada de texto sospechaosa.";
 
   if(Number(document.getElementById('input-averageLifespan').value) <= 0)
-    return "No puede colocar valores negativos en la hectareas.";
+    return "No puede colocar valores negativos en vida promedio.";
 
   if(document.getElementById('select-conservationStatus').value === ' ')
-    return "Debe seleccionar una provincia de la lista.";
+    return "Debe seleccionar un estatus de conservación de la lista.";
 
   return "";
 }
