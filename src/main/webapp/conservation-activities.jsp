@@ -48,28 +48,24 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label class="label">Zona Forestal</label>
-                        <select class="select select-bordered w-full">
-                            <option>Todas</option>
+                        <select id="filter-zone" class="select select-bordered w-full" onchange="filterActivities()">
+                            <option value="">Todas</option>
                             <% for (ForestZone zone : zoneDAO.getAllForestZones()) { %>
-                            <option value="<%= zone.getZoneId() %>"><%= zone.getZoneName() %></option>
+                            <option value="<%= zone.getZoneName() %>"><%= zone.getZoneName() %></option>
                             <% } %>
                         </select>
                     </div>
                     <div>
                         <label class="label">Tipo de Actividad</label>
-                        <input type="text" placeholder="Filtrar por tipo..." class="input input-bordered w-full">
+                        <input id="filter-activityType" type="text" placeholder="Filtrar por tipo..." class="input input-bordered w-full" onchange="filterActivities()">
+                    </div>
+                    <div>
+                        <label class="label">Entidad Responsable</label>
+                        <input id="filter-responsableEntity" type="text" placeholder="Filtrar por nombre..." class="input input-bordered w-full" onchange="filterActivities()">
                     </div>
                     <div>
                         <label class="label">Fecha Inicio</label>
-                        <input type="date" class="input input-bordered w-full">
-                    </div>
-                    <div>
-                        <label class="label">Estado</label>
-                        <select class="select select-bordered w-full">
-                            <option>Todos</option>
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                        </select>
+                        <input id="filter-startDate" type="date" class="input input-bordered w-full" onchange="filterActivities()">
                     </div>
                 </div>
             </div>
@@ -90,10 +86,16 @@
                         </thead>
                         <tbody>
                             <% for (ConservationActivity activity : activities) { %>
-                            <tr onclick="viewActivityDetails(
+                            <tr class="hover:bg-[#F4FAF7] activities-row"
+                                onclick="viewActivityDetails(
                                             '<%= activity.getActivityType().replace("'", "\\'") %>',
                                             '<%= activity.getDescription().replace("'", "\\'") %>'
-                                            )" style="cursor: pointer;" class="hover:bg-[#F4FAF7]">
+                                            )" style="cursor: pointer;" 
+                                data-zone="<%= zoneDAO.getForestZoneById(activity.getZoneId()).getZoneName().toLowerCase() %>"
+                                data-activity-type="<%= activity.getActivityType() != null ? activity.getActivityType().toLowerCase() : "" %>"
+                                data-responsable-entity="<%= activity.getResponsibleEntity() != null ? activity.getResponsibleEntity().toLowerCase() : "" %>"
+                                data-start-date="<%= activity.getStartDate() != null ? activity.getStartDate() : "" %>">
+                                
                                 <td><%= zoneDAO.getForestZoneById(activity.getZoneId()).getZoneName() %></td>
                                 <td><%= activity.getActivityType() %></td>
                                 <td>
@@ -246,13 +248,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="modal-action mt-6">
-                    <button onclick="document.getElementById('detail-activity-modal').close()" 
-                            class="btn btn-ghost hover:bg-gray-100">
-                        Cerrar Ventana
-                    </button>
                 </div>
             </div>
         </dialog>

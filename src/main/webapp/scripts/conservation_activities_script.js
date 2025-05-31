@@ -3,6 +3,10 @@ const hasEndateCheck = document.getElementById('check-is-in-course');
 
 hasEndateCheck.addEventListener('change', function() {
   document.getElementById('input-endDate').disabled = this.checked;
+
+  if(this.checked){
+    document.getElementById('input-endDate').value = '';
+  }
 });
 
 function openAddModal() {
@@ -53,10 +57,8 @@ function placeDataInForm(data){
     document.getElementById('input-estimatedBudget').value = data.estimatedBudget;
     document.getElementById('input-description').value = data.description;
 
-    if(!data.endDate){
-      hasEndateCheck.checked = true;
-      document.getElementById('input-endDate').disabled = true;
-    }
+    hasEndateCheck.checked = !data.endDate;
+    document.getElementById('input-endDate').disabled = !data.endDate;
 }
 
 
@@ -167,10 +169,44 @@ function showErrorMsg(errorMsg){
 
 }
 
-
-
 function viewActivityDetails(type, description) {
   document.getElementById('detailType').innerText = type;
   document.getElementById('detailDescription').innerText = description || '—';
   document.getElementById('detail-activity-modal').showModal();
+}
+
+
+// Filter functionality for species
+function filterActivities() {
+    const zoneFilter = document.getElementById('filter-zone').value.toLowerCase();
+    const activityTypeFilter = document.getElementById('filter-activityType').value.toLowerCase();
+    const responsableEntityFilter = document.getElementById('filter-responsableEntity').value.toLowerCase();
+    const startDateFilter = document.getElementById('filter-startDate').value;
+    
+    const rows = document.querySelectorAll('.activities-row');
+    
+    rows.forEach(row => {
+        const zone = row.getAttribute('data-zone');
+        const activityType = row.getAttribute('data-activity-type');
+        const responsableEntity = row.getAttribute('data-responsable-entity');
+        const startDate = row.getAttribute('data-start-date');
+        
+        // Zone filter
+        const zoneMatch = zoneFilter === '' || zone.includes(zoneFilter);
+        
+        // Activity Type filter
+        const activityTypeMatch = activityTypeFilter === '' || activityType.includes(activityTypeFilter);
+
+        // Responsable Entity filter
+        const responsableEntityMatch = responsableEntityFilter === '' || responsableEntity.includes(responsableEntityFilter);
+
+        // Start Date filter
+        const startDateMatch = startDateFilter === '' || new Date(startDate) >= new Date(startDateFilter);
+
+        if (zoneMatch && activityTypeMatch && responsableEntityMatch && startDateMatch) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
 }
