@@ -1,32 +1,54 @@
 package com.espe.zonarbol.model;
 
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.sql.Timestamp;
 
+@XmlRootElement(name = "treeSpecies")
+@XmlAccessorType(XmlAccessType.FIELD)
+@Entity
+@Table(name = "tree_species")
 public class TreeSpecies {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "species_id")
     private int speciesId;
+
+    @Column(name = "scientific_name", nullable = false, unique = true)
     private String scientificName;
+
+    @Column(name = "common_name")
     private String commonName;
+
+    @Column(name = "family")
     private String family;
+
+    @Column(name = "average_lifespan")
     private Integer averageLifespan;
+
+    @Column(name = "conservation_status")
     private String conservationStatus;
+
+    @Column(name = "first_registered", insertable = false, updatable = false)
     private Timestamp firstRegistered;
 
-    // Constructors
     public TreeSpecies() {}
 
-    public TreeSpecies(int speciesId, String scientificName, String commonName, 
-                      String family, Integer averageLifespan, 
-                      String conservationStatus, Timestamp firstRegistered) {
-        this.speciesId = speciesId;
+    public TreeSpecies(String scientificName, String commonName, String family,
+                       Integer averageLifespan, String conservationStatus) {
         this.scientificName = scientificName;
         this.commonName = commonName;
         this.family = family;
         this.averageLifespan = averageLifespan;
         this.conservationStatus = conservationStatus;
-        this.firstRegistered = firstRegistered;
     }
 
-    // Getters and Setters
+    // Getters and setters
+
     public int getSpeciesId() {
         return speciesId;
     }
